@@ -11,7 +11,7 @@ import pandas as pd
 from tqdm.auto import tqdm
 
 # Import the models
-from models.caesar_meta import CAESar
+from models.caesar import CAESar
 
 # Suppress warnings
 import warnings
