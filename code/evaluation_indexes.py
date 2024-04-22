@@ -18,15 +18,6 @@ warnings.simplefilter(action='ignore')
 OUTPUT_PATH = '../output/indexes' # Path to save the results
 N_blocks = 24 # Number of blocks in the block cross-validation
 seed = 2 # Seed for reproducibility
-theta = 0.05 # Define the interest quantile
-
-# Check if there is a GPU available for neural models (BCGNS and K-QRNN)
-if torch.cuda.is_available(): # Set the device to GPU 0
-    device = torch.device("cuda:0")
-else: # If CUDA is not available, use the CPU
-    print('WARNING: CUDA not available. Using CPU.')
-    device = torch.device("cpu")
-x_lags = 5 # Number of timesteps to consider in the past for the neural models
 
 # Load and prepare the data
 with open('../data/indexes.pickle', 'rb') as f:
