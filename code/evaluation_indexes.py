@@ -842,4 +842,44 @@ for theta in [0.05, 0.025, 0.01]:
     # Close the tabular
     print('\\end{tabular}\n\n\\vspace{1em}\n')
 
+#%% Computational Time
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_theme()
+
+# Define assets and algorithms
+Assets = df.columns
+Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1']
+
+# Store the computational times for every asset and fold
+comp_times = dict()
+for algo in Algos: #Iterate over the algorithms
+    temp_res = list() #Initialize the list of computational times
+    for theta in [0.05, 0.025, 0.01]: #Iterate over the confidence level theta
+
+        # Load the data
+        with open(f'{OUTPUT_PATH}/results{str(theta).replace(".", "")}.pickle', 'rb') as f:
+            times, _ = pickle.load(f)
+            
+        for idx_bcv in range(N_blocks): #Iterate over the folds
+            for asset in df.columns: #Iterate over the assets
+                temp_res.append(times[idx_bcv][asset][algo]) #Store the computational time
+    comp_times[algo] = temp_res #Update the main dict
+
+# Boxplot
+to_plot = pd.DataFrame(comp_times)
+
+fig, ax = plt.subplots(1, 1, figsize=(12, 4))
+ax.set_yscale('log')
+
+sns.boxplot(data=to_plot)
+plt.title('Computational Time Comparison', fontsize='x-large')
+plt.xlabel('Algorithm', fontsize='large')
+plt.ylabel('Training Computational time (s)', fontsize='large')
+
+plt.tight_layout()
+plt.savefig(f'{OUTPUT_PATH}/comp_time_boxplot.png', dpi=200)
+plt.show()
+
 # %%
