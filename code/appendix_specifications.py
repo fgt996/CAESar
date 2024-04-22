@@ -21,7 +21,6 @@ warnings.simplefilter(action='ignore')
 OUTPUT_PATH = '../output/indexes' # Path to save the results
 N_blocks = 24 # Number of blocks in the block cross-validation
 seed = 2 # Seed for reproducibility
-theta = 0.05 # Define the interest quantile
 
 # Load and prepare the data
 with open('../data/indexes.pickle', 'rb') as f:
@@ -33,55 +32,57 @@ df = df[ (df.index>=pd.to_datetime('1993-07-01')) & (df.index<pd.to_datetime('20
 
 #%% Core 
 
-# Load data
-with open(f'{OUTPUT_PATH}/results{str(theta).replace(".", "")}.pickle', 'rb') as f:
-    times, predictions = pickle.load(f)
+for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
+    print(f'Computing the models for theta={theta}...\n\n')
+    # Load data
+    with open(f'{OUTPUT_PATH}/results{str(theta).replace(".", "")}.pickle', 'rb') as f:
+        times, predictions = pickle.load(f)
 
-# Main loop
-for idx_bcv in tqdm(range(N_blocks), desc='Iterating over folds'):
-    # Extract data for the fold
-    start_date = pd.to_datetime(f'{1993+idx_bcv}-07-01') #Define starting point of the fold
-    train_date = pd.to_datetime(f'{1998+idx_bcv}-07-01') #Define the training set
-    val_date = pd.to_datetime(f'{1999+idx_bcv}-07-01') #Define the validation set
-    end_date = pd.to_datetime(f'{2000+idx_bcv}-07-01') #Define the ending point of the fold
+    # Main loop
+    for idx_bcv in tqdm(range(N_blocks), desc='Iterating over folds'):
+        # Extract data for the fold
+        start_date = pd.to_datetime(f'{1993+idx_bcv}-07-01') #Define starting point of the fold
+        train_date = pd.to_datetime(f'{1998+idx_bcv}-07-01') #Define the training set
+        val_date = pd.to_datetime(f'{1999+idx_bcv}-07-01') #Define the validation set
+        end_date = pd.to_datetime(f'{2000+idx_bcv}-07-01') #Define the ending point of the fold
 
-    #Switch to numpy (it's more easier to handle in the following)
-    data = df[ (df.index>=start_date) & (df.index<end_date) ].values
+        #Switch to numpy (it's more easier to handle in the following)
+        data = df[ (df.index>=start_date) & (df.index<end_date) ].values
 
-    T = data.shape[0] #Define the total number of observations
-    N = data.shape[1] #Define the total number of assets
-    ti = len(df[ (df.index>=start_date) & (df.index<train_date) ]) # Train set length
-    tv = len(df[ (df.index>=start_date) & (df.index<val_date) ]) # Train+val set length
+        T = data.shape[0] #Define the total number of observations
+        N = data.shape[1] #Define the total number of assets
+        ti = len(df[ (df.index>=start_date) & (df.index<train_date) ]) # Train set length
+        tv = len(df[ (df.index>=start_date) & (df.index<val_date) ]) # Train+val set length
 
-    #Iterates over the assets
-    for asset in range(N):
-        y = data[:, asset] #Isolate the target time series
+        #Iterates over the assets
+        for asset in range(N):
+            y = data[:, asset] #Isolate the target time series
 
-        # SAV
-        if not 'CAESar_SAV' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
-            start = time.time() # Initialize the timer
-            mdl = CAESar(theta, 'SAV') # Initialize the model
-            res = mdl.fit_predict(y, tv, seed=seed, return_train=False) # Fit and predict
-            times[idx_bcv][df.columns[asset]]['CAESar_SAV'] = time.time()-start # Store the computation time
-            predictions[idx_bcv][df.columns[asset]]['CAESar_SAV'] = res # Store the predictions
-            del(mdl); del(res) # Clear the memory
+            # SAV
+            if not 'CAESar_SAV' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
+                start = time.time() # Initialize the timer
+                mdl = CAESar(theta, 'SAV') # Initialize the model
+                res = mdl.fit_predict(y, tv, seed=seed, return_train=False) # Fit and predict
+                times[idx_bcv][df.columns[asset]]['CAESar_SAV'] = time.time()-start # Store the computation time
+                predictions[idx_bcv][df.columns[asset]]['CAESar_SAV'] = res # Store the predictions
+                del(mdl); del(res) # Clear the memory
 
-        # GARCH
-        if not 'CAESar_G' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
-            start = time.time() # Initialize the timer
-            mdl = CAESar(theta, 'GARCH') # Initialize the model
-            res = mdl.fit_predict(y, tv, seed=seed, return_train=False) # Fit and predict
-            times[idx_bcv][df.columns[asset]]['CAESar_G'] = time.time()-start # Store the computation time
-            predictions[idx_bcv][df.columns[asset]]['CAESar_G'] = res # Store the predictions
-            del(mdl); del(res) # Clear the memory
+            # GARCH
+            if not 'CAESar_G' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
+                start = time.time() # Initialize the timer
+                mdl = CAESar(theta, 'GARCH') # Initialize the model
+                res = mdl.fit_predict(y, tv, seed=seed, return_train=False) # Fit and predict
+                times[idx_bcv][df.columns[asset]]['CAESar_G'] = time.time()-start # Store the computation time
+                predictions[idx_bcv][df.columns[asset]]['CAESar_G'] = res # Store the predictions
+                del(mdl); del(res) # Clear the memory
 
-        # Print the update
-        print(f'Fold {idx_bcv} - Asset {asset} completed.')
-    
-    # Save the results
-    print('Fold', idx_bcv, 'completed. Saving the results...\n\n')
-    with open(f'{OUTPUT_PATH}/results{str(theta).replace(".", "")}.pickle', 'wb') as f:
-        pickle.dump([times, predictions], f)
+            # Print the update
+            print(f'Fold {idx_bcv} - Asset {asset} completed.')
+        
+        # Save the results
+        print('Fold', idx_bcv, 'completed. Saving the results...\n\n')
+        with open(f'{OUTPUT_PATH}/results{str(theta).replace(".", "")}.pickle', 'wb') as f:
+            pickle.dump([times, predictions], f)
 
 #%% Table Loss Function
 
