@@ -39,7 +39,7 @@ class CAViaR():
             - q: quantile estimate
             - y: true value
         OUTPUTS:
-            - loss: loss value
+            - Pinball loss: loss value
         '''
         return np.mean(
             np.where(y<q, (1-self.theta), -self.theta) * (q-y)
@@ -200,16 +200,17 @@ class CAViaR():
         if return_train:
             return {'qi':qi, 'beta':self.beta}
     
-    def predict(self, yf):
+    def predict(self, yf=list()):
         '''
         Predict the quantile.
         INPUTS:
-            - yf: test data
+            - yf: test data. Default is an empty list
         OUTPUTS:
-            - qf: quantile estimate
+            - qf: quantile estimate. If yf is not empty, the internal state is updated with the last observation
         '''
         qf = self.loop(self.beta, yf, self.last_state, pred_mode=True)
-        self.last_state = [yf[-1], qf[-1]]
+        if len(yf) > 0:
+            self.last_state = [yf[-1], qf[-1]]
         return qf
 
     def fit_predict(self, y, ti, seed=None, return_train=True, q0=None):
