@@ -2,20 +2,80 @@
 import numpy as np
 
 class GAS1():
+    '''
+    GAS1 model for Expected Shortfall estimation.
+    '''
     def __init__(self, theta):
+        '''
+        Initialization of the GAS1 model.
+        INPUTS:
+            - theta: float
+                desired confidence level.
+        OUTPUTS:
+            - None
+        '''
         self.theta = theta
 
     def loss(self, v, e, y):
-        return np.mean(
+        '''
+        Compute the GAS1 loss.
+        INPUTS:
+            - v: float
+                quantile forecast.
+            - e: float
+                expected shortfall forecast.
+            - y: ndarray
+                target time series.
+        OUTPUTS:
+            - loss_val: float
+                GAS1 loss.
+        '''
+        loss_val = np.mean(
             np.where(y<=v, (y-v)/(self.theta*e), 0) + v/e + np.log(-e)
         )
+        return loss_val
     
     def smooth_loss(self, v, e, y, tau):
-        return np.mean(
+        '''
+        Compute the smooth version of the GAS1 loss.
+        INPUTS:
+            - v: float
+                quantile forecast.
+            - e: float
+                expected shortfall forecast.
+            - y: ndarray
+                target time series.
+            - tau: float
+                smoothing parameter.
+        OUTPUTS:
+            - loss_val: float
+                GAS1 loss.
+        '''
+        loss_val = np.mean(
             (y-v)/( (1 + np.exp(tau*(y-v)))*self.theta*e ) + v/e + np.log(-e)
         )
+        return loss_val
             
     def GAS1_loop(self, beta, y, k0, pred_mode=False):
+        '''
+        Loop for the GAS1 model.
+        INPUTS:
+            - beta: ndarray
+                model parameters.
+            - y: ndarray
+                target time series.
+            - k0: float
+                initial point for the state variable.
+            - pred_mode: bool, optional
+                prediction mode. Default is False.
+        OUTPUTS:
+            - q: ndarray
+                quantile forecast.
+            - e: ndarray
+                expected shortfall forecast.
+            - k: ndarray
+                state variable.
+        '''
         # Initial point
         if pred_mode: #If we are in prediction mode, we have k at step -1 and we need to compute k at step 0
             k = list()
@@ -34,41 +94,83 @@ class GAS1():
                      beta[3]*(np.where(y[t-1]<=q[t-1], y[t-1]/self.theta, 0) - e[t-1]) / e[t-1])
             q.append(beta[0]*np.exp(k[t]))
             e.append(beta[1]*np.exp(k[t]))
-        return np.array(q), np.array(e), np.array(k)
+        q, e, k = np.array(q), np.array(e), np.array(k)
+        return q, e, k
     
-    def GASloss(self, beta, y, point0, tau=None):
-        q, e, _ = self.GAS1_loop(beta, y, point0)
+    def GASloss(self, beta, y, k0, tau=None):
+        '''
+        Compute the GAS1 loss.
+        INPUTS:
+            - beta: ndarray
+                model parameters.
+            - y: ndarray
+                target time series.
+            - k0: float
+                initial point for the state variable.
+            - tau: float, optional
+                smoothing parameter. If None, the original loss is computed. Default is None.
+        OUTPUTS:
+            - loss_val: float
+                GAS1 loss, either in its original form (when tau=None) or smoothed version.
+        '''
+        q, e, _ = self.GAS1_loop(beta, y, k0)
         if isinstance(tau, type(None)):
-            return self.loss(q, e, y)
+            loss_val = self.loss(q, e, y)
         else:
-            return self.smooth_loss(q, e, y, tau)
+            loss_val = self.smooth_loss(q, e, y, tau)
+        return loss_val
     
     def fit_core(self, yi, beta0, n_rep, k0, tau=None):
+        '''
+        Core function for the GAS1 model.
+        INPUTS:
+            - yi: ndarray
+                target time series.
+            - beta0: ndarray
+                initial model parameters.
+            - n_rep: int
+                number of repetitions.
+            - k0: float 
+                initial point for the state variable.
+            - tau: float, optional
+                smoothing parameter. If None, the original loss is computed. Default is None.
+        OUTPUTS:
+            - beta: ndarray
+                optimized model parameters if the optimization is successful,
+                otherwise the initial parameters.
+        '''
         from scipy.optimize import minimize
-        if isinstance(tau, type(None)):
-            bound = [(None,0), (None,0), (None,None), (None,None)]
-            constraints = [{'type': 'ineq', 'fun': lambda x: x[0]-x[1]}]
-            res = minimize(lambda x: self.GASloss(x, yi, k0, tau), beta0, bounds=bound,
-                            constraints=constraints, method='SLSQP', options={'disp': False})
-            self.opt_res = res
-            self.tau = tau
-            if res.status == 0:
-                return res.x
-            else:
-                return beta0
+        bound = [(None,0), (None,0), (None,None), (None,None)]
+        constraints = [{'type': 'ineq', 'fun': lambda x: x[0]-x[1]}]
+        res = minimize(lambda x: self.GASloss(x, yi, k0, tau), beta0, bounds=bound,
+                        constraints=constraints, method='SLSQP', options={'disp': False})
+        self.opt_res = res
+        self.tau = tau
+        if res.status == 0:
+            return res.x
         else:
-            bound = [(None,0), (None,0), (None,None), (None,None)]
-            constraints = [{'type': 'ineq', 'fun': lambda x: x[0]-x[1]}]
-            res = minimize(lambda x: self.GASloss(x, yi, k0, tau), beta0, bounds=bound,
-                            constraints=constraints, method='SLSQP', options={'disp': False})
-            self.opt_res = res
-            self.tau = tau
-            if res.status == 0:
-                return res.x
-            else:
-                return beta0
+            return beta0
 
     def fit(self, yi, seed=None, return_train=False):
+        '''
+        Fit the GAS1 model.
+        INPUTS:
+            - yi: ndarray
+                target time series.
+            - seed: int or None, optional
+                random seed. Default is None.
+            - return_train: bool, optional
+                if True, return the fitted variables. Default is False.
+        OUTPUTS:
+            - qi: ndarray
+                quantile forecast in the training set (if return_train=True).
+            - ei: ndarray
+                expected shortfall in the training set (if return_train=True).
+            - ki: ndarray
+                state variable in the training set (if return_train=True).
+            - beta: ndarray
+                optimized model parameters (if return_train=True).
+        '''
         import multiprocessing as mp
         from scipy.optimize import fmin
         
@@ -84,6 +186,7 @@ class GAS1():
         quantile0 = int(round(n_emp * self.theta))-1
         if quantile0 < 0: quantile0 = 0
         k0 = np.log(-y_sort[quantile0]) if y_sort[quantile0]<0 else np.log(y_sort[quantile0])
+        # The initial guess for model coefficients is taken from the original paper
         self.beta0 = np.array([-1.164, -1.757, 0.995, 0.007])
 
         #-------------------- Step 2: Optimization Routine
@@ -100,22 +203,64 @@ class GAS1():
         self.train_out = {'qi':qi, 'ei':ei, 'ki':ki}
         self.last_state = [qi[-1], ki[-1]]
         if return_train:
-            return {'qi':qi, 'ei':ei, 'beta':self.beta}
+            return {'qi':qi, 'ei':ei, 'ki':ki, 'beta':self.beta}
     
-    def predict(self, yf):
+    def predict(self, yf=list()):
+        '''
+        Predict the GAS1 model.
+        INPUTS:
+            - yf: ndarray, optional
+                target time series. If yf is not empty, the internal state is updated
+                with the last observation. Default is an empty list.
+        OUTPUTS:
+            - qf: ndarray
+                quantile forecast in the test set.
+            - ef: ndarray
+                expected shortfall forecast in the test set.
+            - kf: ndarray
+                state variable in the test set.
+        '''
         qf, ef, kf = self.GAS1_loop(self.beta, yf, self.last_state, pred_mode=True)
-        self.last_state = [qf[-1], kf[-1]]
-        return qf, ef
+        if len(yf) > 0:
+            self.last_state = [qf[-1], kf[-1]]
+        return qf, ef, kf
 
     def fit_predict(self, y, ti, seed=None, return_train=False):
+        '''
+        Fit and predict the GAS1 model.
+        INPUTS:
+            - y: ndarray
+                target time series.
+            - ti: int
+                train set length.
+            - seed: int or None, optional
+                random seed. Default is None.
+            - return_train: bool, optional
+                if True, return the fitted values in training set. Default is False.
+        OUTPUTS:
+            - qi: ndarray
+                quantile forecast in the training set (if return_train=True).
+            - ei: ndarray
+                expected shortfall forecast in the training set (if return_train=True).
+            - ki: ndarray
+                state variable in the training set (if return_train=True).
+            - qf: ndarray
+                quantile forecast in the test set.
+            - ef: ndarray
+                expected shortfall forecast in the test set.
+            - kf: ndarray
+                state variable in the test set.
+            - beta: ndarray
+                optimized model parameters.
+        '''
         yi, yf = y[:ti], y[ti:] #Split train and test
         if return_train:
             res_train = self.fit(yi, seed=seed, return_train=True) #Train AE
-            qf, ef = self.predict(yf)
-            return {'qi':res_train['qi'], 'ei':res_train['ei'],
-                    'qf':qf, 'ef':ef, 'beta':self.beta} #Return prediction
+            qf, ef, kf = self.predict(yf)
+            return {'qi':res_train['qi'], 'ei':res_train['ei'], 'ki':res_train['ki'],
+                    'qf':qf, 'ef':ef, 'kf':kf, 'beta':self.beta} #Return prediction
         else:
             self.fit(yi, seed=seed, return_train=False) #Train AE
-            qf, ef = self.predict(yf)
-            return {'qf':qf, 'ef':ef, 'beta':self.beta} #Return prediction
+            qf, ef, kf = self.predict(yf)
+            return {'qf':qf, 'ef':ef, 'kf':kf, 'beta':self.beta} #Return prediction
         

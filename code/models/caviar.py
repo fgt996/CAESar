@@ -9,8 +9,10 @@ class CAViaR():
         '''
         Initialization of the CAViaR model.
         INPUTS:
-            - theta: quantile level
-            - spec: specification of the model (SAV, AS, GARCH). Default is AS
+            - theta: float
+                quantile level.
+            - spec: str, optional
+                specification of the model (SAV, AS, GARCH). Default is AS.
         OUTPUTS:
             - None
         '''
@@ -36,10 +38,13 @@ class CAViaR():
         '''
         Pinball loss function.
         INPUTS:
-            - q: quantile estimate
-            - y: true value
+            - q: ndarray
+                quantile estimate.
+            - y: ndarray
+                true value.
         OUTPUTS:
-            - Pinball loss: loss value
+            - Pinball loss: float
+                loss value.
         '''
         return np.mean(
             np.where(y<q, (1-self.theta), -self.theta) * (q-y)
@@ -49,12 +54,17 @@ class CAViaR():
         '''
         Loop for the SAV model.
         INPUTS:
-            - beta: parameters
-            - y: true value
-            - q0: initial quantile
-            - pred_mode: prediction mode. Default is False
+            - beta: ndarray
+                regression coefficients.
+            - y: ndarray
+                true value.
+            - q0: float
+                initial quantile.
+            - pred_mode: bool, optional
+                prediction mode. Default is False.
         OUTPUTS:
-            - q: quantile estimate
+            - q: ndarray
+                quantile estimate.
         '''
         # Initial point
         if pred_mode: #If we are in prediction mode, we have y and q at step -1 and we need to compute q at step 0
@@ -73,12 +83,17 @@ class CAViaR():
         '''
         Loop for the AS model.
         INPUTS:
-            - beta: parameters
-            - y: true value
-            - q0: initial quantile
-            - pred_mode: prediction mode. Default is False
+            - beta: ndarray
+                regression coefficients.
+            - y: ndarray
+                true value.
+            - q0: float
+                initial quantile.
+            - pred_mode: bool, optional
+                prediction mode. Default is False.
         OUTPUTS:
-            - q: quantile estimate
+            - q: ndarray
+                quantile estimate.
         '''
         # Initial point
         if pred_mode: #If we are in prediction mode, we have y and q at step -1 and we need to compute q at step 0
@@ -97,12 +112,17 @@ class CAViaR():
         '''
         Loop for the GARCH model.
         INPUTS:
-            - beta: parameters
-            - y: true value
-            - q0: initial quantile
-            - pred_mode: prediction mode. Default is False
+            - beta: ndarray
+                regression coefficients.
+            - y: ndarray
+                true value.
+            - q0: float
+                initial quantile.
+            - pred_mode: bool, optional
+                prediction mode. Default is False.
         OUTPUTS:
-            - q: quantile estimate
+            - q: ndarray
+                quantile estimate.
         '''
         # Initial point
         if pred_mode: #If we are in prediction mode, we have y and q at step -1 and we need to compute q at step 0
@@ -120,11 +140,15 @@ class CAViaR():
         '''
         Loss function for the CAViaR model.
         INPUTS:
-            - beta: parameters
-            - y: true value
-            - q0: initial quantile
+            - beta: ndarray
+                regression coefficients.
+            - y: ndarray
+                true value.
+            - q0: float
+                initial quantile.
         OUTPUTS:
-            - loss: loss value
+            - loss: float
+                loss value.
         '''
         q = self.loop(beta, y, q0)
         return self.loss_function(q, y)
@@ -133,12 +157,19 @@ class CAViaR():
         '''
         Fit the CAViaR model.
         INPUTS:
-            - yi: training data
-            - seed: random seed. Default is None
-            - return_train: return the training prediction. Default is False
-            - q0: initial quantile. Default is None
+            - yi: ndarray
+                training data.
+            - seed: int or None, optional
+                random seed. Default is None.
+            - return_train: bool, optional
+                return the training prediction. Default is False.
+            - q0: float, optional
+                initial quantile. Default is None.
         OUTPUTS:
-            - qi: training prediction (if return_train=True)
+            - qi: ndarray
+                quantile forecast in the training set (if return_train=True).
+            - beta: ndarray
+                fitted coefficients of the regression (if return_train=True).
         '''
         from scipy.optimize import fmin
 
@@ -204,9 +235,12 @@ class CAViaR():
         '''
         Predict the quantile.
         INPUTS:
-            - yf: test data. Default is an empty list
+            - yf: ndarray, optional
+                test data. If yf is not empty, the internal state is updated
+                with the last observation.Default is an empty list.
         OUTPUTS:
-            - qf: quantile estimate. If yf is not empty, the internal state is updated with the last observation
+            - qf: ndarray
+                quantile estimate.
         '''
         qf = self.loop(self.beta, yf, self.last_state, pred_mode=True)
         if len(yf) > 0:
@@ -217,15 +251,23 @@ class CAViaR():
         '''
         Fit the model and predict the quantile.
         INPUTS:
-            - y: data
-            - ti: train/test split point
-            - seed: random seed. Default is None
-            - return_train: return the training prediction. Default is True
-            - q0: initial quantile. Default is None
+            - y: ndarray
+                data.
+            - ti: int
+                train/test split point.
+            - seed: int or None, optional
+                random seed. Default is None.
+            - return_train: bool, optional
+                return the training prediction. Default is True.
+            - q0: float, optional
+                initial quantile. Default is None.
         OUTPUTS:
-            - dict{'qi': training prediction (if return_train=True),
-                'qf': test prediction,
-                'beta': model parameters}
+            - qi: ndarray
+                quantile forecast in the training set (if return_train=True).
+            - qf: ndarray
+                quantile forecast in the test set
+            - beta: ndarray
+                fitted coefficients of the regression
         '''
         yi, yf = y[:ti], y[ti:] #Split train and test
         if return_train:
