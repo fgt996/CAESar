@@ -231,7 +231,7 @@ class CAViaR():
         if return_train:
             return {'qi':qi, 'beta':self.beta}
     
-    def predict(self, yf=list()):
+    def predict(self, yf=np.array(list())):
         '''
         Predict the quantile.
         INPUTS:

@@ -548,7 +548,7 @@ class CAESar():
         if return_train:
             return {'qi':qi, 'ei':ei, 'beta':self.beta.reshape((2, self.n_parameters))}
     
-    def predict(self, yf=list()):
+    def predict(self, yf=np.array(list())):
         '''
         Predict the quantile.
         INPUTS:

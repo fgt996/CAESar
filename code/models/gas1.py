@@ -205,7 +205,7 @@ class GAS1():
         if return_train:
             return {'qi':qi, 'ei':ei, 'ki':ki, 'beta':self.beta}
     
-    def predict(self, yf=list()):
+    def predict(self, yf=np.array(list())):
         '''
         Predict the GAS1 model.
         INPUTS:
