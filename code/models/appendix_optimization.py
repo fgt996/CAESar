@@ -326,20 +326,20 @@ class B_CAESar():
         OUTPUTS:
             - None
         '''
-        from scipy.optimize import fmin
+        from scipy.optimize import minimize
 
         # First iteration
-        beta_worker, fval_beta_worker, _, _, temp = fmin(
+        res = minimize(
             lambda x: self.ESloss(x, yi, qi, r0), beta0,
-            disp=False,full_output=True)
-        exitflag_worker = 1 if temp==0 else 0
+            method='SLSQP', options={'disp':False})
+        beta_worker, fval_beta_worker, exitflag_worker = res.x, res.fun, int(res.success)
 
         # Iterate until the optimization is successful or the maximum number of repetitions is reached
         for _ in range(n_rep):
-            beta_worker, fval_beta_worker, _, _, temp = fmin(
-                lambda x: self.ESloss(x, yi, qi, r0),
-                beta_worker, disp=False, full_output=True) #Minimize over beta
-            exitflag_worker = 1 if temp==0 else 0
+            res = minimize(
+                lambda x: self.ESloss(x, yi, qi, r0), beta_worker,
+                method='SLSQP', options={'disp':False})
+            beta_worker, fval_beta_worker, exitflag_worker = res.x, res.fun, int(res.success)
             #If optimization is successful, exit the loop (no need to iterate further repetitions)
             if exitflag_worker == 1:
                 break
