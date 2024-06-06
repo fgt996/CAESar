@@ -15,7 +15,7 @@ from models.caesar import CAESar
 from models.kcaviar import K_CAViaR
 from models.bcgns import BCGNS
 from models.kqrnn import K_QRNN
-from models.gas1 import GAS1
+from models.gas import GAS1, GAS2
 
 # Suppress warnings
 import warnings
@@ -32,7 +32,8 @@ if torch.cuda.is_available(): # Set the device to GPU 0
 else: # If CUDA is not available, use the CPU
     print('WARNING: CUDA not available. Using CPU.')
     device = torch.device("cpu")
-x_lags = 5 # Number of timesteps to consider in the past for the neural models
+x_lags_B = 25 # Number of timesteps to consider in the past for BCGNS
+x_lags_Q = 25 # Number of timesteps to consider in the past for K-QRNN
 
 # Load and prepare the data
 with open('../data/stocks.pickle', 'rb') as f:
@@ -58,17 +59,17 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
     qrnn_params = {0.05: {'activation': 'sigmoid', 'dropout': 0.5, 'reg': [0.001, 0.0001],
                         'lr': 0.0005, 'batch_size': 128, 'initializer': 'glorot_uniform',
                         'optimizer': 'adam', 'reg_type': 'l1_l2', 'n_epochs': 15000,
-                        'patience': 500, 'theta': 0.05, 'n_points': 10, 'layers': [5, 64, 10]},
+                        'patience': 500, 'theta': 0.05, 'n_points': 10, 'layers': [x_lags_Q, 64, 10]},
                 0.025: {'activation': 'relu', 'dropout': 0, 'reg': [0.001, 0.0001],
                         'lr': 5e-05, 'batch_size': 128, 'initializer': 'glorot_uniform',
                         'optimizer': 'adam', 'reg_type': 'l1_l2',
                         'n_epochs': 15000, 'patience': 500, 'theta': 0.025,
-                        'n_points': 10, 'layers': [5, 256, 16, 8, 10]},
+                        'n_points': 10, 'layers': [x_lags_Q, 256, 16, 8, 10]},
                 0.01: {'activation': 'relu', 'dropout': 0.5, 'reg': 1e-05,
                         'lr': 0.0003, 'batch_size': 256, 'initializer': 'glorot_normal',
                         'optimizer': 'adam', 'reg_type': 'l1',
                         'n_epochs': 15000, 'patience': 500, 'theta': 0.01,
-                        'n_points': 10, 'layers': [5, 256, 8, 10]}}
+                        'n_points': 10, 'layers': [x_lags_Q, 256, 8, 10]}}
 
     # Main loop
     for idx_bcv in tqdm(range(N_blocks), desc='Iterating over folds'):
@@ -100,13 +101,6 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
                 predictions[idx_bcv][df.columns[asset]] = {'y':data[tv:, asset]}
             
             y = data[:, asset] #Isolate the target time series
-            # Prepare the data for the neural models
-            x = np.concatenate([y.reshape(-1,1)[k:-x_lags+k] for k in range(x_lags)], axis=1)
-            x = torch.tensor(x, dtype=torch.float32).to(device) #x contains the past values of y
-            y_torch = torch.tensor(y.reshape(-1,1)[x_lags:], dtype=torch.float32).to(device) #y contains the target values
-            x_train, y_train = x[:ti-x_lags], y_torch[:ti-x_lags]
-            x_val, y_val = x[ti-x_lags:tv-x_lags], y_torch[ti-x_lags:tv-x_lags]
-            x_test = x[tv-x_lags:]
 
             # CAESar
             if not 'CAESar' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
@@ -128,6 +122,14 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
 
             # BCGNS
             if not 'BCGNS' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
+                # Prepare the data for the neural models
+                x = np.concatenate([y.reshape(-1,1)[k:-x_lags_B+k] for k in range(x_lags_B)], axis=1)
+                x = torch.tensor(x, dtype=torch.float32).to(device) #x contains the past values of y
+                y_torch = torch.tensor(y.reshape(-1,1)[x_lags_B:], dtype=torch.float32).to(device) #y contains the target values
+                x_train, y_train = x[:ti-x_lags_B], y_torch[:ti-x_lags_B]
+                x_val, y_val = x[ti-x_lags_B:tv-x_lags_B], y_torch[ti-x_lags_B:tv-x_lags_B]
+                x_test = x[tv-x_lags_B:]
+
                 start = time.time() # Initialize the timer
                 # Reproducibility in PyTorch
                 torch.manual_seed(seed)
@@ -143,6 +145,14 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
 
             # K-QRNN
             if not 'K-QRNN' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
+                # Prepare the data for the neural models
+                x = np.concatenate([y.reshape(-1,1)[k:-x_lags_Q+k] for k in range(x_lags_Q)], axis=1)
+                x = torch.tensor(x, dtype=torch.float32).to(device) #x contains the past values of y
+                y_torch = torch.tensor(y.reshape(-1,1)[x_lags_Q:], dtype=torch.float32).to(device) #y contains the target values
+                x_train, y_train = x[:ti-x_lags_Q], y_torch[:ti-x_lags_Q]
+                x_val, y_val = x[ti-x_lags_Q:tv-x_lags_Q], y_torch[ti-x_lags_Q:tv-x_lags_Q]
+                x_test = x[tv-x_lags_Q:]
+
                 start = time.time() # Initialize the timer
                 # Reproducibility in PyTorch
                 torch.manual_seed(seed)
@@ -166,6 +176,15 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
                 predictions[idx_bcv][df.columns[asset]]['GAS1'] = res # Store the predictions
                 del(mdl); del(res) # Clear the memory
 
+            # GAS2
+            if not 'GAS2' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
+                start = time.time() # Initialize the timer
+                mdl = GAS2(theta) # Initialize the model
+                res = mdl.fit_predict(y, tv, seed=seed) # Fit and predict
+                times[idx_bcv][df.columns[asset]]['GAS2'] = time.time()-start # Store the computation time
+                predictions[idx_bcv][df.columns[asset]]['GAS2'] = res # Store the predictions
+                del(mdl); del(res) # Clear the memory
+
             # Print the update
             print(f'Fold {idx_bcv} - Asset {asset} completed.')
         
@@ -180,7 +199,7 @@ from utils import barrera_loss, patton_loss
 
 # Define assets and algorithms
 Assets = df.columns
-Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1']
+Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1', 'GAS2']
 
 #-------------------- Step 1: For every algorithm and asset, compute the loss mean value across the folds
 tab4tex = dict() #Initialize the table of results
@@ -215,9 +234,9 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the confidence level theta
                     predictions[idx_bcv][asset]['y']))
                 # GAS1 model exhibits strong instability, and sometimes its solution explodes
                 #       and the corresponding dynamic if unfeasible. In this case, remove the fold
-                if (mdl=='GAS1') and (temp_res_1[-1]>10):
+                if ((mdl=='GAS1') or (mdl=='GAS2')) and (temp_res_1[-1]>10):
                     temp_res_1 = temp_res_1[:-1]
-                if (mdl=='GAS1') and (temp_res_2[-1]>20):
+                if ((mdl=='GAS1') or (mdl=='GAS2')) and (temp_res_2[-1]>20):
                     temp_res_2 = temp_res_2[:-1]
             # There could be NaN values in the results list: remove them
             temp_res_1 = np.array(temp_res_1)[~ np.isnan(temp_res_1)]
@@ -309,7 +328,7 @@ from utils import McneilFrey_test, AS14_test
 
 # Define assets and algorithms
 Assets = df.columns
-Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1']
+Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1', 'GAS2']
 
 #-------------------- Step 1: For every algorithm and asset, compute the rejection rate across the folds
 tab4tex = dict() #Initialize the table of results
@@ -480,7 +499,7 @@ for theta in [0.05, 0.025, 0.01]:
 
     # Print the body
     for algo in Algos:
-        to_print = f'\\multirow{{2}}{{*}}{{\\textbf{{{algo}}}}} & $\\mathbf{{MNF}}$'
+        to_print = f'\\multirow{{3}}{{*}}{{\\textbf{{{algo}}}}} & $\\mathbf{{MNF}}$'
         for asset in Assets:
             if asset == algo:
                 to_print += f' & -'

@@ -33,7 +33,7 @@ from utils import barrera_loss, patton_loss
 
 # Define assets and algorithms
 Assets = df.columns
-Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1']
+Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1', 'GAS2']
 
 #-------------------- Step 1: For every algorithm and asset, compute the loss mean value across the folds
 tab4tex = dict() #Initialize the table of results
@@ -93,9 +93,9 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the confidence level theta
                     predictions[idx_bcv][asset]['y']))
                 # GAS1 model exhibits strong instability, and sometimes its solution explodes
                 #       and the corresponding dynamic if unfeasible. In this case, remove the fold
-                if (mdl=='GAS1') and (temp_res_1[-1]>1):
+                if ((mdl=='GAS1') or (mdl=='GAS2')) and (temp_res_1[-1]>1):
                     temp_res_1 = temp_res_1[:-1]
-                if (mdl=='GAS1') and (temp_res_2[-1]>10):
+                if ((mdl=='GAS1') or (mdl=='GAS2')) and (temp_res_2[-1]>10):
                     temp_res_2 = temp_res_2[:-1]
             # There could be NaN values in the results list: remove them
             temp_res_1 = np.array(temp_res_1)[~ np.isnan(temp_res_1)]
@@ -215,7 +215,7 @@ from utils import McneilFrey_test, AS14_test
 
 # Define assets and algorithms
 Assets = df.columns
-Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1']
+Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1', 'GAS2']
 
 #-------------------- Step 1: For every algorithm and asset, compute the rejection rate across the folds
 tab4tex = dict() #Initialize the table of results
@@ -386,7 +386,7 @@ for theta in [0.05, 0.025, 0.01]:
 
     # Print the body
     for algo in Algos:
-        to_print = f'\\multirow{{2}}{{*}}{{\\textbf{{{algo}}}}} & $\\mathbf{{MNF}}$'
+        to_print = f'\\multirow{{3}}{{*}}{{\\textbf{{{algo}}}}} & $\\mathbf{{MNF}}$'
         for asset in Assets:
             if asset == algo:
                 to_print += f' & -'
@@ -418,7 +418,7 @@ from utils import barrera_loss, patton_loss, DBtest
 
 # Define assets and algorithms
 Assets = df.columns
-Algos = ['K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1']
+Algos = ['K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1', 'GAS2']
 
 #-------------------- Step 1: For every algorithm and asset, compute the rejection rate across the folds
 tab4tex = dict() #Initialize the table of results
@@ -528,7 +528,7 @@ from utils import barrera_loss, patton_loss, LossDiff_test, Encompassing_test
 
 # Define assets and algorithms
 Assets = df.columns
-Algos = ['K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1']
+Algos = ['K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1', 'GAS2']
 
 #-------------------- Step 1: For every algorithm and asset, compute the rejection rate across the folds
 tab4tex_ld = dict() #Initialize the table of results for loss difference
@@ -734,7 +734,7 @@ from utils import barrera_loss, patton_loss, cr_t_test
 
 # Define assets and algorithms
 Assets = df.columns
-Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1']
+Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1', 'GAS2']
 
 #-------------------- Step 1: For every algorithm and asset, store the losses across the folds
 tab4tex = dict() #Initialize the table of results
@@ -841,7 +841,7 @@ sns.set_theme()
 
 # Define assets and algorithms
 Assets = df.columns
-Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1']
+Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1', 'GAS2']
 
 # Store the computational times for every asset and fold
 comp_times = dict()
@@ -872,5 +872,118 @@ plt.ylabel('Training Computational time (s)', fontsize='large')
 plt.tight_layout()
 plt.savefig(f'{OUTPUT_PATH}/comp_time_boxplot.png', dpi=200)
 plt.show()
+
+#%% Pinball Loss
+
+from utils import PinballLoss
+from matplotlib.ticker import FuncFormatter
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_theme()
+
+# Define assets and algorithms
+Assets = df.columns
+Algos = ['CAESar', 'K-CAViaR', 'BCGNS', 'K-QRNN', 'GAS1', 'GAS2']
+
+#-------------------- Step 1: For every algorithm, compute the loss mean value
+pin_losses = dict() #Initialize the list of results
+for mdl in Algos:
+    pin_losses[mdl] = list()  #Initialize the list of pinball losses
+
+for theta in [0.05, 0.025, 0.01]: #Iterate over the confidence level theta
+    pinball_loss = PinballLoss(theta) #Initialize the pinball loss
+
+    # Load the predictions
+    with open(f'{OUTPUT_PATH}/results{str(theta).replace(".", "")}.pickle', 'rb') as f:
+        _, predictions = pickle.load(f)
+
+    for mdl in Algos: #Iterate over the algorithms
+        #temp_res = list()
+        for asset in Assets: #Iterate over the assets
+            for idx_bcv in range(N_blocks): #Iterate over the folds
+                pin_losses[mdl].append(pinball_loss(predictions[idx_bcv][asset][mdl]['qf'],
+                    predictions[idx_bcv][asset]['y']))
+        #pin_losses[mdl] = temp_res
+
+for mdl in Algos[1:]:
+    pin_losses[mdl] = np.array(pin_losses[mdl]) - np.array(pin_losses['CAESar'])
+    if (mdl=='GAS1') or (mdl=='GAS2'):
+        pin_losses[mdl] = pin_losses[mdl][pin_losses[mdl]<1]
+
+# Histogram of the loss differences
+fig, ax = plt.subplots(2, 3, figsize=(15, 8))
+formatter = FuncFormatter(lambda y, _: f'{y * 1e4:.0f}') # make formatter
+
+for idx, mdl in enumerate(Algos[1:4]):
+    to_plot = pin_losses[mdl][np.isnan(pin_losses[mdl])==False]
+    sns.histplot(to_plot[to_plot<0],
+                 bins=np.linspace( np.min(to_plot) - 1e-5, 0, 50),
+                ax=ax[0, idx], color=sns.color_palette()[0],
+                label='Competitor outperforming')
+    sns.histplot(to_plot[to_plot>0],
+                 bins=np.linspace( 0, np.max(to_plot) + 1e-5, 50),
+                ax=ax[0, idx], color=sns.color_palette()[1],
+                label='CAESar outperforming')
+    ax[0, idx].xaxis.set_major_formatter(formatter)
+    ax[0, idx].set_title(f'{mdl}')
+    ax[0, idx].set_yscale('log')
+    ax[0, idx].set_xlabel(r'Loss Difference $\cdot 10^{-4}$')
+    ax[0, idx].set_ylabel('Frequency')
+    ax[0, idx].legend(loc='upper right', bbox_to_anchor=(1,1))
+
+formatter = FuncFormatter(lambda y, _: f'{y * 1e2:.0f}') # make formatter
+
+idx, mdl = 4, Algos[-2]
+to_plot = pin_losses[mdl][np.isnan(pin_losses[mdl])==False]
+sns.histplot(to_plot[to_plot<0],
+                bins=np.linspace( np.min(to_plot) - 1e-5, 0, 50),
+            ax=ax[1, 0], color=sns.color_palette()[0],
+            label='Competitor outperforming')
+sns.histplot(to_plot[to_plot>0],
+                bins=np.linspace( 0, np.max(to_plot) + 1e-5, 50),
+            ax=ax[1, 0], color=sns.color_palette()[1],
+            label='CAESar outperforming')
+ax[1, 0].set_title(f'{mdl}')
+ax[1, 0].set_yscale('log')
+ax[1, 0].xaxis.set_major_formatter(formatter)
+ax[1, 0].set_xlabel(r'Loss Difference $\cdot 10^{-2}$')
+ax[1, 0].set_ylabel('Frequency')
+ax[1, 0].legend(loc='upper right', bbox_to_anchor=(1,1))
+
+formatter = FuncFormatter(lambda y, _: f'{y * 1e3:.0f}') # make formatter
+
+idx, mdl = 5, Algos[-1]
+to_plot = pin_losses[mdl][np.isnan(pin_losses[mdl])==False]
+sns.histplot(to_plot[to_plot<0],
+                bins=np.linspace( np.min(to_plot) - 1e-5, 0, 50),
+            ax=ax[1, 1], color=sns.color_palette()[0],
+            label='Competitor outperforming')
+sns.histplot(to_plot[to_plot>0],
+                bins=np.linspace( 0, np.max(to_plot) + 1e-5, 50),
+            ax=ax[1, 1], color=sns.color_palette()[1],
+            label='CAESar outperforming')
+ax[1, 1].set_title(f'{mdl}')
+ax[1, 1].set_yscale('log')
+ax[1, 1].xaxis.set_major_formatter(formatter)
+ax[1, 1].set_xlabel(r'Loss Difference $\cdot 10^{-3}$')
+ax[1, 1].set_ylabel('Frequency')
+ax[1, 1].legend(loc='upper right', bbox_to_anchor=(1,1))
+
+fig.delaxes(ax[1, 2])
+
+# Adjust bottom of bottom row
+bottom_ax = ax[1, 0].get_position()
+top_ax = ax[1, 1].get_position()
+ax_height = top_ax.y1 - bottom_ax.y0
+plt.subplots_adjust(bottom=bottom_ax.y0 - 0.5 * ax_height)
+
+plt.suptitle('Pinball Loss Difference Histogram')
+plt.tight_layout()
+plt.savefig(f'{OUTPUT_PATH}/pinball_loss_diff_hist.png', dpi=300)
+plt.show()
+
+
+
+
 
 # %%

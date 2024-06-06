@@ -15,7 +15,7 @@ from models.caesar import CAESar
 from models.kcaviar import K_CAViaR
 from models.bcgns import BCGNS
 from models.kqrnn import K_QRNN
-from models.gas1 import GAS1
+from models.gas import GAS1, GAS2
 
 # Suppress warnings
 import warnings
@@ -32,7 +32,8 @@ if torch.cuda.is_available(): # Set the device to GPU 0
 else: # If CUDA is not available, use the CPU
     print('WARNING: CUDA not available. Using CPU.')
     device = torch.device("cpu")
-x_lags = 5 # Number of timesteps to consider in the past for the neural models
+x_lags_B = 25 # Number of timesteps to consider in the past for BCGNS
+x_lags_Q = 25 # Number of timesteps to consider in the past for K-QRNN
 
 # Load and prepare the data
 with open('../data/indexes.pickle', 'rb') as f:
@@ -59,17 +60,17 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
                         'lr': 3e-05, 'batch_size': 128, 'initializer': 'glorot_normal',
                         'optimizer': 'rmsprop', 'reg_type': 'l1',
                         'n_epochs': 15000, 'patience': 500, 'theta': 0.05,
-                        'n_points': 10, 'layers': [5, 16, 128, 128, 10]},
+                        'n_points': 10, 'layers': [x_lags_Q, 16, 128, 128, 10]},
                 0.025:{'activation': 'tanh', 'dropout': 0.4, 'reg': 0.001,
                         'lr': 0.0001, 'batch_size': 64, 'initializer': 'glorot_uniform',
                         'optimizer': 'adam', 'reg_type': 'l2',
                         'n_epochs': 15000, 'patience': 500, 'theta': 0.025,
-                        'n_points': 10, 'layers': [5, 32, 32, 10]},
+                        'n_points': 10, 'layers': [x_lags_Q, 32, 32, 10]},
                 0.01: {'activation': 'tanh', 'dropout': 0.2, 'reg': 1e-05,
                         'lr': 3e-05, 'batch_size': 128, 'initializer': 'glorot_normal',
                         'optimizer': 'rmsprop', 'reg_type': 'l1',
                         'n_epochs': 15000, 'patience': 500, 'theta': 0.01,
-                        'n_points': 10, 'layers': [5, 16, 128, 128, 10]}}
+                        'n_points': 10, 'layers': [x_lags_Q, 16, 128, 128, 10]}}
 
     # Main loop
     for idx_bcv in tqdm(range(N_blocks), desc='Iterating over folds'):
@@ -101,13 +102,6 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
                 predictions[idx_bcv][df.columns[asset]] = {'y':data[tv:, asset]}
             
             y = data[:, asset] #Isolate the target time series
-            # Prepare the data for the neural models
-            x = np.concatenate([y.reshape(-1,1)[k:-x_lags+k] for k in range(x_lags)], axis=1)
-            x = torch.tensor(x, dtype=torch.float32).to(device) #x contains the past values of y
-            y_torch = torch.tensor(y.reshape(-1,1)[x_lags:], dtype=torch.float32).to(device) #y contains the target values
-            x_train, y_train = x[:ti-x_lags], y_torch[:ti-x_lags]
-            x_val, y_val = x[ti-x_lags:tv-x_lags], y_torch[ti-x_lags:tv-x_lags]
-            x_test = x[tv-x_lags:]
 
             # CAESar
             if not 'CAESar' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
@@ -116,7 +110,7 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
                 res = mdl.fit_predict(y, tv, seed=seed, return_train=False) # Fit and predict
                 times[idx_bcv][df.columns[asset]]['CAESar'] = time.time()-start # Store the computation time
                 predictions[idx_bcv][df.columns[asset]]['CAESar'] = res # Store the predictions
-                del(mdl); del(res) # Clear the memory
+                del(mdl); del(res) # Clean the memory
 
             # K-CAViaR
             if not 'K-CAViaR' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
@@ -125,10 +119,18 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
                 res = mdl.fit_predict(y, tv, seed=seed, jobs=10, return_train=False) # Fit and predict
                 times[idx_bcv][df.columns[asset]]['K-CAViaR'] = time.time()-start # Store the computation time
                 predictions[idx_bcv][df.columns[asset]]['K-CAViaR'] = res # Store the predictions
-                del(mdl); del(res) # Clear the memory
+                del(mdl); del(res) # Clean the memory
 
             # BCGNS
             if not 'BCGNS' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
+                # Prepare the data for the neural models
+                x = np.concatenate([y.reshape(-1,1)[k:-x_lags_B+k] for k in range(x_lags_B)], axis=1)
+                x = torch.tensor(x, dtype=torch.float32).to(device) #x contains the past values of y
+                y_torch = torch.tensor(y.reshape(-1,1)[x_lags_B:], dtype=torch.float32).to(device) #y contains the target values
+                x_train, y_train = x[:ti-x_lags_B], y_torch[:ti-x_lags_B]
+                x_val, y_val = x[ti-x_lags_B:tv-x_lags_B], y_torch[ti-x_lags_B:tv-x_lags_B]
+                x_test = x[tv-x_lags_B:]
+
                 start = time.time() # Initialize the timer
                 # Reproducibility in PyTorch
                 torch.manual_seed(seed)
@@ -140,10 +142,18 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
                 res = mdl(x_test) # Predict
                 times[idx_bcv][df.columns[asset]]['BCGNS'] = time.time()-start # Store the computation time
                 predictions[idx_bcv][df.columns[asset]]['BCGNS'] = res # Store the predictions
-                del(mdl); del(res) # Clear the memory
+                del(mdl); del(res) # Clean the memory
 
             # K-QRNN
             if not 'K-QRNN' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
+                # Prepare the data for the neural models
+                x = np.concatenate([y.reshape(-1,1)[k:-x_lags_Q+k] for k in range(x_lags_Q)], axis=1)
+                x = torch.tensor(x, dtype=torch.float32).to(device) #x contains the past values of y
+                y_torch = torch.tensor(y.reshape(-1,1)[x_lags_Q:], dtype=torch.float32).to(device) #y contains the target values
+                x_train, y_train = x[:ti-x_lags_Q], y_torch[:ti-x_lags_Q]
+                x_val, y_val = x[ti-x_lags_Q:tv-x_lags_Q], y_torch[ti-x_lags_Q:tv-x_lags_Q]
+                x_test = x[tv-x_lags_Q:]
+
                 start = time.time() # Initialize the timer
                 # Reproducibility in PyTorch
                 torch.manual_seed(seed)
@@ -156,7 +166,7 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
                 res = mdl(x_test.to(torch.float64)) # Predict
                 times[idx_bcv][df.columns[asset]]['K-QRNN'] = time.time()-start # Store the computation time
                 predictions[idx_bcv][df.columns[asset]]['K-QRNN'] = res # Store the predictions
-                del(mdl); del(res) # Clear the memory
+                del(mdl); del(res) # Clean the memory
 
             # GAS1
             if not 'GAS1' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
@@ -165,7 +175,16 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the desired confidence levels
                 res = mdl.fit_predict(y, tv, seed=seed) # Fit and predict
                 times[idx_bcv][df.columns[asset]]['GAS1'] = time.time()-start # Store the computation time
                 predictions[idx_bcv][df.columns[asset]]['GAS1'] = res # Store the predictions
-                del(mdl); del(res) # Clear the memory
+                del(mdl); del(res) # Clean the memory
+
+            # GAS2
+            if not 'GAS2' in times[idx_bcv][df.columns[asset]].keys(): # Check if the model has already been computed
+                start = time.time() # Initialize the timer
+                mdl = GAS2(theta) # Initialize the model
+                res = mdl.fit_predict(y, tv, seed=seed) # Fit and predict
+                times[idx_bcv][df.columns[asset]]['GAS2'] = time.time()-start # Store the computation time
+                predictions[idx_bcv][df.columns[asset]]['GAS2'] = res # Store the predictions
+                del(mdl); del(res) # Clean the memory
 
             # Print the update
             print(f'Fold {idx_bcv} - Asset {asset} completed.')
