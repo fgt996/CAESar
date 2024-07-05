@@ -1,6 +1,5 @@
 
-# CAESar
-CAESar: Conditional Autoregressive Expected Shortfall
+# CAESar: Conditional Autoregressive Expected Shortfall
 
 # Motivation
 
