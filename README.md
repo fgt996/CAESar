@@ -1,6 +1,8 @@
 
 # CAESar: Conditional Autoregressive Expected Shortfall
 
+![Build Status](https://img.shields.io/badge/CAESar%20Paper-blue?style=plastic&logoColor=blue&link=https%3A%2F%2Fgithub.com%2Ffgt996%2FCAESar)
+
 # Motivation
 
 This repository aims to provide a framework for forecasting the Value at Risk (VaR) and Expected Shortfall (ES) of a time series. These are the most important risk measures for financial applications. Specifically, let's consider a time series $`Y=\{y_t\}_{t=1}^T `$ and a probability level $\theta\in[0,{1 \over 2}]$.The code in this repository is focused on the left tail of the distribution. Furthermore, it is assumed the left tail is made up of strictly negative values, that is the time series is centered on 0. If $Y$ represents the asset returns and $F_t$ the distribution function of $y_{t}$ conditioned on the information set up to time $t-1$ ( $` \mathcal{F}_{t-1} `$ ), then the VaR is defined as the conditional quantile of $Y$, that is, $` VaR_t(\theta) := F_t^{-1}(\theta) `$. Instead, the ES (historically known as Conditional Value-at-Risk) is defined as the tail mean, that is, $` ES_t(\theta):=\mathbb{E}_{t-1}[y_t | y_t\le VaR_t(\theta)] `$, where $` \mathbb{E}_{t-1}[\cdot] `$ represents the mean conditioned on $\mathcal{F}_{t-1}$. 
