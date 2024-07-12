@@ -9,10 +9,16 @@ This repository aims to provide a framework for forecasting the Value at Risk (V
 
 # Getting Started
 
-First, install the conda environment:
+First, download and unzip the repository. Then, move to the download folder and install the conda environment:
 ```terminal
 cd CAESar
 conda env create -f CAESar_env.yml
+conda activate CAESar
+```
+
+Then, move to the ```code``` directory and run the code. All the code is assumed to be run from the ```code``` folder.
+```terminal
+cd code
 ```
 
 # What is in this Repository
