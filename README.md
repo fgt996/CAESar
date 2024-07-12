@@ -1,7 +1,7 @@
 
 # CAESar: Conditional Autoregressive Expected Shortfall
 
-![Build Status](https://img.shields.io/badge/CAESar_Paper-blue?style=plastic&link=https%3A%2F%2Fpapers.ssrn.com%2Fsol3%2Fpapers.cfm%3Fabstract_id%3D4886158)
+![Build Status](https://img.shields.io/badge/CAESar_Paper_SSRN-blue?style=plastic&link=https%3A%2F%2Fpapers.ssrn.com%2Fsol3%2Fpapers.cfm%3Fabstract_id%3D4886158) ![Build Status](https://img.shields.io/badge/CAESar_Paper_Arxiv-red?style=plastic&link=https%3A%2F%2Farxiv.org%2Fabs%2F2407.06619)
 
 # Motivation
 
@@ -55,7 +55,7 @@ The ```data``` folder contains the time series data. It is assumed to be a '.pic
 The ```output``` folder contains the halfway output for the CAESar paper experiments. That is a series of nested dictionaries, whose ultimate values contain the predicted VaR and ES provided by the different models. It is useful if you want to replicate the results analysis carried out in the paper.
 
 # Bibliography
-[1] CAESar: Conditional Autoregressive Expected Shortfall
+[1] Gatta, F., Lillo, F., & Mazzarisi, P. (2024). CAESar: Conditional Autoregressive Expected Shortfall. arXiv preprint arXiv:2407.06619.
 
 [2] Barrera, D., Crépey, S., Gobet, E., Nguyen, H. D., & Saadeddine, B. (2022). Learning value-at-risk and expected shortfall. arXiv preprint arXiv:2209.06476.
 
