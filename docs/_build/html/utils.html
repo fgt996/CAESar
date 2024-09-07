@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils module &mdash; caesarisk 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="models package" href="models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            caesarisk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">caesarisk</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="models.html">models package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#utils.AS14_test"><code class="docutils literal notranslate"><span class="pre">AS14_test</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.AS14_test.__call__"><code class="docutils literal notranslate"><span class="pre">AS14_test.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.DMtest"><code class="docutils literal notranslate"><span class="pre">DMtest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.DMtest.__call__"><code class="docutils literal notranslate"><span class="pre">DMtest.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.Encompassing_test"><code class="docutils literal notranslate"><span class="pre">Encompassing_test</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.Encompassing_test.__call__"><code class="docutils literal notranslate"><span class="pre">Encompassing_test.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.LossDiff_test"><code class="docutils literal notranslate"><span class="pre">LossDiff_test</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.LossDiff_test.__call__"><code class="docutils literal notranslate"><span class="pre">LossDiff_test.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.McneilFrey_test"><code class="docutils literal notranslate"><span class="pre">McneilFrey_test</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.McneilFrey_test.__call__"><code class="docutils literal notranslate"><span class="pre">McneilFrey_test.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.PinballLoss"><code class="docutils literal notranslate"><span class="pre">PinballLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.PinballLoss.__call__"><code class="docutils literal notranslate"><span class="pre">PinballLoss.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.barrera_loss"><code class="docutils literal notranslate"><span class="pre">barrera_loss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.barrera_loss.__call__"><code class="docutils literal notranslate"><span class="pre">barrera_loss.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.bootstrap_mean_test"><code class="docutils literal notranslate"><span class="pre">bootstrap_mean_test</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.bootstrap_mean_test.__call__"><code class="docutils literal notranslate"><span class="pre">bootstrap_mean_test.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.cr_t_test"><code class="docutils literal notranslate"><span class="pre">cr_t_test()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.gaussian_tail_stats"><code class="docutils literal notranslate"><span class="pre">gaussian_tail_stats()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.patton_loss"><code class="docutils literal notranslate"><span class="pre">patton_loss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#utils.patton_loss.__call__"><code class="docutils literal notranslate"><span class="pre">patton_loss.__call__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#utils.tstudent_tail_stats"><code class="docutils literal notranslate"><span class="pre">tstudent_tail_stats()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">caesarisk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">caesarisk</a></li>
+      <li class="breadcrumb-item active">utils module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-utils">
+<span id="utils-module"></span><h1>utils module<a class="headerlink" href="#module-utils" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.AS14_test">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">AS14_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">one_side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_boot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#AS14_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.AS14_test" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.bootstrap_mean_test" title="utils.bootstrap_mean_test"><code class="xref py py-class docutils literal notranslate"><span class="pre">bootstrap_mean_test</span></code></a></p>
+<p>Acerbi-Szekely test for assessing the goodness of the Expected Shortfall estimate, with both Z1 and Z2 statistics, as described in:</p>
+<p>Acerbi, C., &amp; Szekely, B. (2014). Back-testing expected shortfall. Risk, 27(11), 76-81.</p>
+<section id="parameters">
+<h2>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>one_side: bool, optional</dt><dd><p>if True, the test is one sided (i.e. H0: mu &gt;= mu_target). Default is False</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_boot: int, optional</dt><dd><p>the number of bootstrap replications. Default is 10_000</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="example-of-usage">
+<h2>Example of usage<a class="headerlink" href="#example-of-usage" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">AS14_test</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-2</span>  <span class="c1">#Replace with price returns</span>
+<span class="n">qf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-1</span>  <span class="c1">#Replace with quantile forecasts</span>
+<span class="n">ef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-1</span>  <span class="c1">#Replace with expected shortfall forecasts</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1">#Set the desired confidence level</span>
+
+<span class="c1"># Compute the Acerbi-Szekely test with Z1 statistic</span>
+<span class="n">AS14_test</span><span class="p">()(</span><span class="n">qf</span><span class="p">,</span> <span class="n">ef</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_type</span><span class="o">=</span><span class="s1">&#39;Z1&#39;</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="methods">
+<h2>Methods:<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.AS14_test.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Z1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#AS14_test.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.AS14_test.__call__" title="Link to this definition"></a></dt>
+<dd><p>Compute the test</p>
+<dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Q: ndarray</dt><dd><p>the quantile estimates</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>E: ndarray</dt><dd><p>the expected shortfall estimates</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Y: ndarray</dt><dd><p>the actual time series</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>test_type: str, optional</dt><dd><p>the type of test to perform. It must be either ‘Z1’ or ‘Z2’. Default is ‘Z1’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>seed: int, optional</dt><dd><p>the seed for the random number generator. Default is None</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>statistic: float</dt><dd><p>the test statistic</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>p_value: float</dt><dd><p>the p-value of the test</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.DMtest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">DMtest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#DMtest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.DMtest" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Diebold-Mariano test for the equality of forecast accuracy.</p>
+<section id="id1">
+<h2>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>loss_func: callable</dt><dd><p>the loss function to compute the forecast accuracy</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>h: int, optional</dt><dd><p>the maximum lag to compute the autocovariance. Default is 1</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id2">
+<h2>Example of usage<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">DMtest</span><span class="p">,</span> <span class="n">patton_loss</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-2</span>  <span class="c1">#Replace with price returns</span>
+<span class="n">qf_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with quantile forecasts of algorithm 1</span>
+<span class="n">ef_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with expected shortfall forecasts of algorithm 1</span>
+<span class="n">qf_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with quantile forecasts of algorithm 2</span>
+<span class="n">ef_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with expected shortfall forecasts of algorithm 2</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1">#Set the desired confidence level</span>
+
+<span class="n">DMtest</span><span class="p">(</span><span class="n">patton_loss</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">ret_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">))(</span><span class="n">qf_1</span><span class="p">,</span> <span class="n">ef_1</span><span class="p">,</span> <span class="n">qf_2</span><span class="p">,</span> <span class="n">ef_2</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="c1">#Compute the Diebold Mariano test (with Patton loss)</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>Methods:<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.DMtest.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Q2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#DMtest.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.DMtest.__call__" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Q1: ndarray</dt><dd><p>the first set of quantile predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>E1: ndarray</dt><dd><p>the first set of expected shortfall predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Q2: ndarray</dt><dd><p>the second set of quantile predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>E2: ndarray</dt><dd><p>the second set of expected shortfall predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Y: ndarray</dt><dd><p>the actual time series</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>stat: float</dt><dd><p>the test statistic</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>p_value: float</dt><dd><p>the p-value of the test</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>mean_difference: float</dt><dd><p>the mean difference of the losses</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.Encompassing_test">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">Encompassing_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_boot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Encompassing_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Encompassing_test" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.bootstrap_mean_test" title="utils.bootstrap_mean_test"><code class="xref py py-class docutils literal notranslate"><span class="pre">bootstrap_mean_test</span></code></a></p>
+<p>Encompassing test to assess whenever the first sample of losses is statistically lower than the second. As described in:</p>
+<p>Kışınbay, T. (2010). The use of encompassing tests for forecast combinations. Journal of Forecasting, 29(8), 715-727.</p>
+<section id="id4">
+<h2>Parameters:<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>loss: callable</dt><dd><p>the loss function to compute the forecast accuracy</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_boot: int, optional</dt><dd><p>the number of bootstrap replications. Default is 10_000</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id5">
+<h2>Example of usage<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">Encompassing_test</span><span class="p">,</span> <span class="n">patton_loss</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-2</span>  <span class="c1">#Replace with price returns</span>
+<span class="n">qf_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-1</span>  <span class="c1">#Replace with quantile forecasts of algorithm 1</span>
+<span class="n">ef_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-1</span>  <span class="c1">#Replace with expected shortfall forecasts of algorithm 1</span>
+<span class="n">qf_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-1</span>  <span class="c1">#Replace with quantile forecasts of algorithm 2</span>
+<span class="n">ef_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-1</span>  <span class="c1">#Replace with expected shortfall forecasts of algorithm 2</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1">#Set the desired confidence level</span>
+
+<span class="n">Encompassing_test</span><span class="p">(</span><span class="n">patton_loss</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">ret_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">))(</span><span class="n">qf_1</span><span class="p">,</span> <span class="n">ef_1</span><span class="p">,</span> <span class="n">qf_2</span><span class="p">,</span> <span class="n">ef_2</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="c1">#Compute the Encompassing test (with Patton loss)</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>Methods:<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.Encompassing_test.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Q_bench</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E_bench</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#Encompassing_test.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.Encompassing_test.__call__" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Q_new: ndarray</dt><dd><p>the first set of quantile predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>E_new: ndarray</dt><dd><p>the first set of expected shortfall predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Q_bench: ndarray</dt><dd><p>the second set of quantile predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>E_bench: ndarray</dt><dd><p>the second set of expected shortfall predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Y: ndarray</dt><dd><p>the actual time series</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>seed: int, optional</dt><dd><p>the seed for the random number generator. Default is None</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>statistic: float</dt><dd><p>the test statistic</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>p_value: float</dt><dd><p>the p-value of the test</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.LossDiff_test">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">LossDiff_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_boot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#LossDiff_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.LossDiff_test" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.bootstrap_mean_test" title="utils.bootstrap_mean_test"><code class="xref py py-class docutils literal notranslate"><span class="pre">bootstrap_mean_test</span></code></a></p>
+<p>Loss difference test to assess whenever the first sample of losses is statistically lower than the second.</p>
+<section id="id7">
+<h2>Parameters:<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>loss: callable</dt><dd><p>the loss function to compute the forecast accuracy</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_boot: int, optional</dt><dd><p>the number of bootstrap replications. Default is 10_000</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id8">
+<h2>Example of usage<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">LossDiff_test</span><span class="p">,</span> <span class="n">patton_loss</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-2</span>  <span class="c1">#Replace with price returns</span>
+<span class="n">qf_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with quantile forecasts of algorithm 1</span>
+<span class="n">ef_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with expected shortfall forecasts of algorithm 1</span>
+<span class="n">qf_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with quantile forecasts of algorithm 2</span>
+<span class="n">ef_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with expected shortfall forecasts of algorithm 2</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1">#Set the desired confidence level</span>
+
+<span class="n">LossDiff_test</span><span class="p">(</span><span class="n">patton_loss</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">ret_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">))(</span><span class="n">qf_1</span><span class="p">,</span> <span class="n">ef_1</span><span class="p">,</span> <span class="n">qf_2</span><span class="p">,</span> <span class="n">ef_2</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="c1">#Compute the Loss Difference test (with Patton loss)</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h2>Methods:<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.LossDiff_test.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E_new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Q_bench</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E_bench</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#LossDiff_test.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.LossDiff_test.__call__" title="Link to this definition"></a></dt>
+<dd><p>Compute the test</p>
+<dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Q_new: ndarray</dt><dd><p>the first set of quantile predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>E_new: ndarray</dt><dd><p>the first set of expected shortfall predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Q_bench: ndarray</dt><dd><p>the second set of quantile predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>E_bench: ndarray</dt><dd><p>the second set of expected shortfall predictions</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Y: ndarray</dt><dd><p>the actual time series</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>seed: int, optional</dt><dd><p>the seed for the random number generator. Default is None</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>statistic: float</dt><dd><p>the test statistic</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>p_value: float</dt><dd><p>the p-value of the test</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.McneilFrey_test">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">McneilFrey_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">one_side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_boot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#McneilFrey_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.McneilFrey_test" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#utils.bootstrap_mean_test" title="utils.bootstrap_mean_test"><code class="xref py py-class docutils literal notranslate"><span class="pre">bootstrap_mean_test</span></code></a></p>
+<p>McNeil-Frey test for assessing the goodness of the Expected Shortfall estimate, as described in:</p>
+<p>McNeil, A. J., &amp; Frey, R. (2000). Estimation of tail-related risk measures for heteroscedastic financial time series: an extreme value approach. Journal of empirical finance, 7(3-4), 271-300.</p>
+<section id="id10">
+<h2>Parameters:<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>one_side: bool, optional</dt><dd><p>if True, the test is one sided (i.e. H0: mu &gt;= mu_target). Default is False</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_boot: int, optional</dt><dd><p>the number of bootstrap replications. Default is 10_000</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id11">
+<h2>Example of usage<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">McneilFrey_test</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-2</span>  <span class="c1">#Replace with price returns</span>
+<span class="n">qf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with quantile forecasts</span>
+<span class="n">ef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with expected shortfall forecasts</span>
+
+<span class="n">McneilFrey_test</span><span class="p">(</span><span class="n">one_side</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">qf</span><span class="p">,</span> <span class="n">ef</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c1">#Compute the McNeil-Frey test</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h2>Methods:<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.McneilFrey_test.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#McneilFrey_test.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.McneilFrey_test.__call__" title="Link to this definition"></a></dt>
+<dd><p>Compute the test</p>
+<dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Q: ndarray</dt><dd><p>the quantile estimates</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>E: ndarray</dt><dd><p>the expected shortfall estimates</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Y: ndarray</dt><dd><p>the actual time series</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>seed: int, optional</dt><dd><p>the seed for the random number generator. Default is None</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>statistic: float</dt><dd><p>the test statistic</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>p_value: float</dt><dd><p>the p-value of the test</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.PinballLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">PinballLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#PinballLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.PinballLoss" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pinball (a.k.a. Quantile) loss function</p>
+<section id="id13">
+<h2>Parameters:<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>theta: float</dt><dd><p>the target confidence level</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ret_mean: bool, optional</dt><dd><p>if True, the function returns the mean of the loss, otherwise the loss point-by-point. Default is True</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id14">
+<h2>Example of usage<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">PinballLoss</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-2</span>  <span class="c1">#Replace with price returns</span>
+<span class="n">qf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with quantile forecasts</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1">#Set the desired confidence level</span>
+
+<span class="n">PinballLoss</span><span class="p">(</span><span class="n">theta</span><span class="p">)(</span><span class="n">qf</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="c1">#Compute the pinball loss</span>
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h2>Methods:<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.PinballLoss.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#PinballLoss.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.PinballLoss.__call__" title="Link to this definition"></a></dt>
+<dd><p>Compute the pinball loss</p>
+<dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>y_pred: ndarray</dt><dd><p>the predicted values</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>y_true: ndarray</dt><dd><p>the true values</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>loss: float</dt><dd><p>the loss function mean value, if ret_mean is True. Otherwise, the loss for each observation</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.barrera_loss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">barrera_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#barrera_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.barrera_loss" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Barrera loss function. Eq. (2.13) in:</p>
+<p>Barrera, D., Crépey, S., Gobet, E., Nguyen, H. D., &amp; Saadeddine, B. (2022). Learning value-at-risk and expected shortfall. arXiv preprint arXiv:2209.06476.</p>
+<section id="id16">
+<h2>Parameters:<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>theta: float</dt><dd><p>the target confidence level</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ret_mean: bool, optional</dt><dd><p>if True, the function returns the mean of the loss, otherwise the loss point-by-point. Default is True</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id17">
+<h2>Example of usage<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">barrera_loss</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-2</span>  <span class="c1">#Replace with price returns</span>
+<span class="n">qf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with quantile forecasts</span>
+<span class="n">ef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with expected shortfall forecasts</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1">#Set the desired confidence level</span>
+
+<span class="n">barrera_loss</span><span class="p">(</span><span class="n">theta</span><span class="p">)(</span><span class="n">qf</span><span class="p">,</span> <span class="n">ef</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="c1">#Compute the barrera loss</span>
+</pre></div>
+</div>
+</section>
+<section id="id18">
+<h2>Methods:<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.barrera_loss.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#barrera_loss.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.barrera_loss.__call__" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>v: ndarray</dt><dd><p>the quantile estimate</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>e: ndarray</dt><dd><p>the expected shortfall estimate</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>y: ndarray</dt><dd><p>the actual time series</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>loss: float</dt><dd><p>the loss function mean value, if ret_mean is True. Otherwise, the loss for each observation</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.bootstrap_mean_test">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">bootstrap_mean_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu_target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_boot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#bootstrap_mean_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.bootstrap_mean_test" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Bootstrap test for assessing whenever mean of a sample is == or &gt;= a target value</p>
+<section id="id19">
+<h2>Parameters:<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>mu_target: float</dt><dd><p>the mean to test against</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>one_side: bool, optional</dt><dd><p>if True, the test is one sided (i.e. H0: mu &gt;= mu_target), otherwise it is two-sided (i.e. H0: mu == mu_target). Default is False</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_boot: int, optional</dt><dd><p>the number of bootstrap replications. Default is 10_000</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.bootstrap_mean_test.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#bootstrap_mean_test.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.bootstrap_mean_test.__call__" title="Link to this definition"></a></dt>
+<dd><p>Compute the test</p>
+<dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>data: ndarray</dt><dd><p>the original sample</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>seed: int, optional</dt><dd><p>the seed for the random number generator. Default is None</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>statistic: float</dt><dd><p>the test statistic</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>p_value: float</dt><dd><p>the p-value of the test</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.cr_t_test">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">cr_t_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">errorsA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errorsB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_len</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#cr_t_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cr_t_test" title="Link to this definition"></a></dt>
+<dd><p>Corrected resampled t-test for the equality of forecast accuracy.</p>
+<dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>errorsA: ndarray</dt><dd><p>the first set of forecast errors</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>errorsB: ndarray</dt><dd><p>the second set of forecast errors</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>train_len: int</dt><dd><p>the length of the training set</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>test_len: int</dt><dd><p>the length of the test set</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>stat: float</dt><dd><p>the test statistic</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>p_val: float</dt><dd><p>the p-value of the test</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<section id="id20">
+<h2>Example of usage<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.gaussian_tail_stats">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">gaussian_tail_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#gaussian_tail_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.gaussian_tail_stats" title="Link to this definition"></a></dt>
+<dd><p>Compute the Value at Risk and Expected Shortfall for a Gaussian distribution</p>
+<dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>theta: float</dt><dd><p>the quantile to compute the statistics</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>loc: ndarray, optional</dt><dd><p>the mean of the distribution</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>scale: ndarray, optional</dt><dd><p>the standard deviation of the distribution</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>var: ndarray</dt><dd><p>the Value at Risk for a normal distribution with mean=loc and standard deviation=scale</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>es: ndarray</dt><dd><p>the Expected Shortfall for a normal distribution with mean=loc and standard deviation=scale</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<section id="id21">
+<h2>Example of usage<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">gaussian_tail_stats</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">gaussian_tail_stats</span><span class="p">(</span><span class="n">theta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span> <span class="c1">#Compute the VaR and the Expected Shortfall</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;VaR =&#39;</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">],</span> <span class="s1">&#39;    ES =&#39;</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;es&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.patton_loss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">patton_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#patton_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.patton_loss" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Patton loss function. Eq. (6) in:</p>
+<p>Patton, A. J., Ziegel, J. F., &amp; Chen, R. (2019). Dynamic semiparametric models for expected shortfall (and value-at-risk). Journal of econometrics, 211(2), 388-413.</p>
+<section id="id22">
+<h2>Parameters:<a class="headerlink" href="#id22" title="Link to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>theta: float</dt><dd><p>the target confidence level</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ret_mean: bool, optional</dt><dd><p>if True, the function returns the mean of the loss, otherwise the loss point-by-point. Default is True</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id23">
+<h2>Example of usage<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">patton_loss</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-2</span>  <span class="c1">#Replace with price returns</span>
+<span class="n">qf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with quantile forecasts</span>
+<span class="n">ef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1">#Replace with expected shortfall forecasts</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1">#Set the desired confidence level</span>
+
+<span class="n">losses</span> <span class="o">=</span> <span class="n">patton_loss</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">ret_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">)(</span><span class="n">qf</span><span class="p">,</span> <span class="n">ef</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="c1">#Compute the patton loss</span>
+</pre></div>
+</div>
+</section>
+<section id="id24">
+<h2>Methods:<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.patton_loss.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#patton_loss.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.patton_loss.__call__" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>v: ndarray</dt><dd><p>the quantile estimate</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>e: ndarray</dt><dd><p>the expected shortfall estimate</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>y: ndarray</dt><dd><p>the actual time series</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>loss: float</dt><dd><p>the loss function mean value, if ret_mean is True. Otherwise, the loss for each observation</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.tstudent_tail_stats">
+<span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">tstudent_tail_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#tstudent_tail_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.tstudent_tail_stats" title="Link to this definition"></a></dt>
+<dd><p>Compute the Value at Risk and Expected Shortfall for a Student’s t distribution</p>
+<dl class="simple">
+<dt>INPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>theta: float</dt><dd><p>the quantile to compute the statistics</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>df: int</dt><dd><p>the degrees of freedom of the distribution</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>loc: ndarray, optional</dt><dd><p>the mean of the distribution</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>scale: ndarray, optional</dt><dd><p>the standard deviation of the distribution</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>OUTPUTS:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>var: ndarray</dt><dd><p>the Value at Risk for the t-distribution</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>es: ndarray</dt><dd><p>the Expected Shortfall for the t-distribution</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<section id="id25">
+<h2>Example of usage<a class="headerlink" href="#id25" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">tstudent_tail_stats</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">tstudent_tail_stats</span><span class="p">(</span><span class="n">theta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)</span> <span class="c1">#Compute the VaR and the Expected Shortfall</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;VaR =&#39;</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">],</span> <span class="s1">&#39;    ES =&#39;</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;es&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="models.html" class="btn btn-neutral float-left" title="models package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Federico Gatta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

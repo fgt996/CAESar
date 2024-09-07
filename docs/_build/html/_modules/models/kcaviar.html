@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>models.kcaviar &mdash; caesarisk 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            caesarisk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">caesarisk</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">caesarisk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">models.kcaviar</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for models.kcaviar</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">from</span> <span class="nn">models.caviar</span> <span class="kn">import</span> <span class="n">CAViaR</span>
+
+<div class="viewcode-block" id="K_CAViaR">
+<a class="viewcode-back" href="../../models.html#models.kcaviar.K_CAViaR">[docs]</a>
+<span class="k">class</span> <span class="nc">K_CAViaR</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Expected Shortfall estimation via Kratz approach [1] with CAViaR [2] for quantile regression.</span>
+
+<span class="sd">    [1] Kratz, M., Lok, Y. H., &amp; McNeil, A. J. (2018). Multinomial VaR backtests: A simple implicit approach to backtesting expected shortfall. Journal of Banking &amp; Finance, 88, 393-407.</span>
+
+<span class="sd">    [2] Engle, R. F., &amp; Manganelli, S. (2004). CAViaR: Conditional autoregressive value at risk by regression quantiles. Journal of Business &amp; Economic Statistics, 22(4), 367-381.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    ----------------</span>
+<span class="sd">        - theta: float</span>
+<span class="sd">            desired confidence level.</span>
+<span class="sd">        - spec: str, optional</span>
+<span class="sd">            specification of the model (SAV, AS, GARCH). Default is AS.</span>
+<span class="sd">        - n_points: int, optional</span>
+<span class="sd">            number of points for mean approximation. Default is 10.</span>
+
+<span class="sd">    Example of usage</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        import numpy as np</span>
+<span class="sd">        from models.kcaviar import K_CAViaR #Import the model</span>
+<span class="sd">        </span>
+<span class="sd">        y = np.random.randn(1500)  #Replace with your data</span>
+<span class="sd">        tv = 1250 #Training set length</span>
+<span class="sd">        theta = 0.05 #Set the desired confidence level</span>
+
+<span class="sd">        mdl = K_CAViaR(theta, &#39;AS&#39;, 10) # Initialize the model</span>
+<span class="sd">        res = mdl.fit_predict(y, tv, seed=2, jobs=10) # Fit and predict</span>
+
+<span class="sd">        q_pred = res[&#39;qf&#39;] #Quantile forecast</span>
+<span class="sd">        es_pred = res[&#39;ef&#39;] #Expected shortfall forecast</span>
+<span class="sd">    </span>
+<span class="sd">    Methods:</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">spec</span><span class="o">=</span><span class="s1">&#39;AS&#39;</span><span class="p">,</span> <span class="n">n_points</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdl_spec</span> <span class="o">=</span> <span class="n">spec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">n_points</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    
+    <span class="k">def</span> <span class="nf">qcaviar_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ti</span><span class="p">,</span> <span class="n">theta_j</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">return_train</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="n">pipend</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Wrapper function for the CAViaR model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - ti: int</span>
+<span class="sd">                train set length.</span>
+<span class="sd">            - theta_j: float</span>
+<span class="sd">                quantile level.</span>
+<span class="sd">            - seed: int or None</span>
+<span class="sd">                random seed.</span>
+<span class="sd">            - return_train: bool, optional</span>
+<span class="sd">                return the train set. Default is False.</span>
+<span class="sd">            - q0: float</span>
+<span class="sd">                initial quantile. Default is None.</span>
+<span class="sd">            - pipend: multiprocessing.connection.Connection</span>
+<span class="sd">                pipe end for communicating multiprocessing.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - None</span>
+
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">mdl</span> <span class="o">=</span> <span class="n">CAViaR</span><span class="p">(</span><span class="n">theta_j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdl_spec</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ti</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="n">return_train</span><span class="p">,</span> <span class="n">q0</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+        <span class="n">pipend</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="K_CAViaR.fit_predict">
+<a class="viewcode-back" href="../../models.html#models.kcaviar.K_CAViaR.fit_predict">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ti</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">q0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fit and predict the K-CAViaR model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - ti: int</span>
+<span class="sd">                train set length.</span>
+<span class="sd">            - seed: int or None, optional</span>
+<span class="sd">                random seed. Default is None.</span>
+<span class="sd">            - jobs: int, optional</span>
+<span class="sd">                number of parallel jobs. Default is 1.</span>
+<span class="sd">            - return_train: bool, optional</span>
+<span class="sd">                return the train set. Default is False.</span>
+<span class="sd">            - q0: float</span>
+<span class="sd">                initial quantile. Default is None.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - qi: ndarray</span>
+<span class="sd">                quantile forecast in the training set (if return_train=True).</span>
+<span class="sd">            - ei: ndarray</span>
+<span class="sd">                expected shortfall in the training set (if return_train=True).</span>
+<span class="sd">            - qf: ndarray</span>
+<span class="sd">                quantile forecast in the test set.</span>
+<span class="sd">            - ef: ndarray</span>
+<span class="sd">                expected shortfall forecast in the test set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Initialize the list of quantile forecasts at different levels theta_j</span>
+        <span class="n">qf_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">return_train</span><span class="p">:</span>
+            <span class="n">qi_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="c1"># Compute CAViaR in the inner theta_j</span>
+        <span class="k">for</span> <span class="n">q_start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">),</span> <span class="n">jobs</span><span class="p">):</span>
+            <span class="c1"># Create and start worker processes</span>
+            <span class="n">workers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span> <span class="c1"># Initialize the list of workers</span>
+            <span class="n">end_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">q_start</span><span class="o">+</span><span class="n">jobs</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)])</span> <span class="c1"># Define the end point of the iteration</span>
+            
+            <span class="k">for</span> <span class="n">theta_j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">q_start</span><span class="p">:</span><span class="n">end_point</span><span class="p">]:</span> <span class="c1"># Iterate over theta_j</span>
+                <span class="n">parent_pipend</span><span class="p">,</span> <span class="n">child_pipend</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pipe</span><span class="p">()</span> <span class="c1"># Create a pipe to communicate with the worker</span>
+                <span class="n">worker</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qcaviar_wrapper</span><span class="p">,</span>
+                                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ti</span><span class="p">,</span> <span class="n">theta_j</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">return_train</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="n">child_pipend</span><span class="p">))</span> <span class="c1"># Define the worker</span>
+                <span class="n">workers</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">worker</span><span class="p">,</span> <span class="n">parent_pipend</span><span class="p">])</span> <span class="c1"># Append the worker to the list</span>
+                <span class="n">worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="c1"># Start the worker</span>
+
+            <span class="c1"># Gather results from workers</span>
+            <span class="k">for</span> <span class="n">worker</span><span class="p">,</span> <span class="n">parent_pipend</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
+                <span class="n">temp_res</span> <span class="o">=</span> <span class="n">parent_pipend</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span> <span class="c1"># Get the result from the worker</span>
+                <span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">()</span> <span class="c1"># Wait for the worker to finish</span>
+                <span class="n">qf_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_res</span><span class="p">[</span><span class="s1">&#39;qf&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">return_train</span><span class="p">:</span>
+                    <span class="n">qi_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_res</span><span class="p">[</span><span class="s1">&#39;qi&#39;</span><span class="p">])</span>
+        
+        <span class="c1"># From list to array</span>
+        <span class="n">qf_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">qf_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_train</span><span class="p">:</span>
+            <span class="n">qi_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">qi_list</span><span class="p">)</span>
+            <span class="n">out_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;qi&#39;</span><span class="p">:</span><span class="n">qi_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,:],</span> <span class="s1">&#39;ei&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">qi_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                        <span class="s1">&#39;qf&#39;</span><span class="p">:</span><span class="n">qf_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,:],</span> <span class="s1">&#39;ef&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">qf_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;qf&#39;</span><span class="p">:</span><span class="n">qf_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,:],</span> <span class="s1">&#39;ef&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">qf_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)}</span>
+        <span class="k">return</span> <span class="n">out_dict</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Federico Gatta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
