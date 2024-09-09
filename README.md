@@ -28,7 +28,7 @@ cd code
 
 # What is in this Repository
 
-This repository provides a tool for academics and practitioners working with financial risk measures by sharing the code used for the experimental stage of the CAESar paper [1]. Specifically, the CAESar model as well as the competing models have been coded as standalone classes that can be easily used in different contexts. As previously specified, the only assumption is that the target VaR and ES can be assumed to be strictly negative. This means that we are working with the left tail of the return time series in a financial context, or, more in general, with a centred distribution in any time series context.
+This repository provides a tool for academics and practitioners working with financial risk measures by sharing the code used for the experimental stage of the CAESar paper [1]. Specifically, the CAESar model as well as the competing models have been coded as standalone classes that can be easily used in different contexts. As previously specified, the only assumption is that the target VaR and ES can be assumed to be strictly negative. This means that we are working with the left tail of the return time series in a financial context or, more in general, with a centred distribution in any time series context.
 
 The repository is organized into 3 folders:
 
