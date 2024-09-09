@@ -111,7 +111,7 @@ class patton_loss():
             loss = np.where(y<=v, (y-v)/(self.theta*e), 0) + v/e + np.log(-e) - 1
         return loss
 
-class DBtest():
+class DMtest():
     '''
     Diebold-Mariano test for the equality of forecast accuracy.
     '''
