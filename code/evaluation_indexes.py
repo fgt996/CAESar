@@ -414,7 +414,7 @@ for theta in [0.05, 0.025, 0.01]:
 
 #%% Model Comparison Tests - Diebold Mariano
 
-from utils import barrera_loss, patton_loss, DBtest
+from utils import barrera_loss, patton_loss, DMtest
 
 # Define assets and algorithms
 Assets = df.columns
@@ -433,8 +433,8 @@ for theta in [0.05, 0.025, 0.01]: #Iterate over the confidence level theta
         _, predictions = pickle.load(f)
 
     # Iniatilize the Diebold-Mariano test
-    db_test_1 = DBtest(barrera_loss(theta, ret_mean=False), h=1) #Test for Barrera loss
-    db_test_2 = DBtest(patton_loss(theta, ret_mean=False), h=1) #Test for Patton loss
+    db_test_1 = DMtest(barrera_loss(theta, ret_mean=False), h=1) #Test for Barrera loss
+    db_test_2 = DMtest(patton_loss(theta, ret_mean=False), h=1) #Test for Patton loss
 
     for asset in Assets:
         tab4tex[theta][asset] = dict() #Initialize the table for the specific asset
