@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>models.gas &mdash; caesarisk 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            caesarisk
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">caesarisk</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">caesarisk</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">models.gas</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for models.gas</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="GAS1">
+<a class="viewcode-back" href="../../models.html#models.gas.GAS1">[docs]</a>
+<span class="k">class</span> <span class="nc">GAS1</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generative Autoregressive Score (GAS) one-factor model for Expected Shortfall estimation. It reproduces the model proposed in:</span>
+
+<span class="sd">    Patton, A. J., Ziegel, J. F., &amp; Chen, R. (2019). Dynamic semiparametric models for expected shortfall (and value-at-risk). Journal of econometrics, 211(2), 388-413.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    ----------------</span>
+<span class="sd">        - theta: float</span>
+<span class="sd">            desired confidence level.</span>
+
+<span class="sd">    Example of usage</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        import numpy as np</span>
+<span class="sd">        from models.gas import GAS1 #Import the model</span>
+<span class="sd">        </span>
+<span class="sd">        y_train, y_test = np.random.randn(1250), np.random.randn(250)  #Replace with your data</span>
+<span class="sd">        tv = 1250 #Training set length</span>
+<span class="sd">        theta = 0.05 #Set the desired confidence level</span>
+
+<span class="sd">        mdl = GAS1(theta) #Initialize the model</span>
+<span class="sd">        res_train = mdl.fit(y_train, seed=2, return_train=True) #Train the model</span>
+<span class="sd">        q_fitted = res_train[&#39;qi&#39;] #Quantile fitted values</span>
+<span class="sd">        es_fitted = res_train[&#39;ei&#39;] #Expected shortfall fitted values</span>
+<span class="sd">        coef = mdl.beta #Fitted coefficients</span>
+
+<span class="sd">        res_test = mdl.predict(y_test) # Predict out-of-sample</span>
+<span class="sd">        state_var = res_test[&#39;kf&#39;] #State variable out-of-sample</span>
+<span class="sd">        q_pred = res_test[&#39;qf&#39;] #Quantile forecast</span>
+<span class="sd">        es_pred = res_test[&#39;ef&#39;] #Expected shortfall forecast</span>
+<span class="sd">    </span>
+<span class="sd">    Methods:</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span>
+
+    <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the GAS1 loss.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - v: float</span>
+<span class="sd">                quantile forecast.</span>
+<span class="sd">            - e: float</span>
+<span class="sd">                expected shortfall forecast.</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - float</span>
+<span class="sd">                GAS1 loss.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">loss_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y</span><span class="o">&lt;=</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">v</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">*</span><span class="n">e</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">v</span><span class="o">/</span><span class="n">e</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">e</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss_val</span>
+    
+    <span class="k">def</span> <span class="nf">smooth_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the smooth version of the GAS1 loss.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - v: float</span>
+<span class="sd">                quantile forecast.</span>
+<span class="sd">            - e: float</span>
+<span class="sd">                expected shortfall forecast.</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - tau: float</span>
+<span class="sd">                smoothing parameter.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - float</span>
+<span class="sd">                GAS1 loss.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">loss_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">v</span><span class="p">)</span><span class="o">/</span><span class="p">(</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">tau</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">v</span><span class="p">)))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">*</span><span class="n">e</span> <span class="p">)</span> <span class="o">+</span> <span class="n">v</span><span class="o">/</span><span class="n">e</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">e</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss_val</span>
+            
+    <span class="k">def</span> <span class="nf">GAS1_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">pred_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Loop for the GAS1 model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - beta: ndarray</span>
+<span class="sd">                model parameters.</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - k0: float</span>
+<span class="sd">                initial point for the state variable.</span>
+<span class="sd">            - pred_mode: bool, optional</span>
+<span class="sd">                prediction mode. Default is False.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - ndarray</span>
+<span class="sd">                quantile forecast.</span>
+<span class="sd">            - ndarray</span>
+<span class="sd">                expected shortfall forecast.</span>
+<span class="sd">            - ndarray</span>
+<span class="sd">                state variable.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Initial point</span>
+        <span class="k">if</span> <span class="n">pred_mode</span><span class="p">:</span> <span class="c1">#If we are in prediction mode, we have k at step -1 and we need to compute k at step 0</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">beta</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">k0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">beta</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">k0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">k0</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">k0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">k0</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">k0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span> <span class="c1">#In pred_mode, k0 is assumed to be [y[-1], k[-1]]</span>
+            <span class="n">q</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="p">[</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="p">[</span><span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1">#If we are in training mode, we have an approximation of k at step 0</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="p">[</span><span class="n">k0</span><span class="p">]</span>
+            <span class="n">q</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="p">[</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">k0</span><span class="p">)],</span> <span class="p">[</span><span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">k0</span><span class="p">)]</span>
+        
+        <span class="c1"># Loop</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+            <span class="n">k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span>\
+                     <span class="n">beta</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">q</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">e</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">e</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">q</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">k</span>
+    
+    <span class="k">def</span> <span class="nf">GASloss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the GAS1 loss.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - beta: ndarray</span>
+<span class="sd">                model parameters.</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - k0: float</span>
+<span class="sd">                initial point for the state variable.</span>
+<span class="sd">            - tau: float, optional</span>
+<span class="sd">                smoothing parameter. If None, the original loss is computed. Default is None.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - float</span>
+<span class="sd">                GAS1 loss, either in its original form (when tau=None) or smoothed version.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GAS1_loop</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="n">loss_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loss_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth_loss</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss_val</span>
+    
+    <span class="k">def</span> <span class="nf">fit_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">beta0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Core function for the GAS1 model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - yi: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - beta0: ndarray</span>
+<span class="sd">                initial model parameters.</span>
+<span class="sd">            - k0: float </span>
+<span class="sd">                initial point for the state variable.</span>
+<span class="sd">            - tau: float, optional</span>
+<span class="sd">                smoothing parameter. If None, the original loss is computed. Default is None.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - ndarray</span>
+<span class="sd">                optimized model parameters if the optimization is successful,</span>
+<span class="sd">                otherwise the initial parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+        <span class="n">bound</span> <span class="o">=</span> <span class="p">[(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)]</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]}]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">GASloss</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="p">),</span> <span class="n">beta0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bound</span><span class="p">,</span>
+                        <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;SLSQP&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opt_res</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">beta0</span>
+
+<div class="viewcode-block" id="GAS1.fit">
+<a class="viewcode-back" href="../../models.html#models.gas.GAS1.fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fit the GAS1 model.</span>
+<span class="sd">        </span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - yi: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - seed: int or None, optional</span>
+<span class="sd">                random seed. Default is None.</span>
+<span class="sd">            - return_train: bool, optional</span>
+<span class="sd">                if True, return the fitted variables. Default is False.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - qi: ndarray</span>
+<span class="sd">                quantile forecast in the training set (if return_train=True).</span>
+<span class="sd">            - ei: ndarray</span>
+<span class="sd">                expected shortfall in the training set (if return_train=True).</span>
+<span class="sd">            - ki: ndarray</span>
+<span class="sd">                state variable in the training set (if return_train=True).</span>
+<span class="sd">            - beta: ndarray</span>
+<span class="sd">                optimized model parameters (if return_train=True).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+        <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fmin</span>
+        
+        <span class="c1">#-------------------- Step 1: Initialization</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yi</span><span class="p">)</span>
+
+        <span class="c1">#The starting forecast ^q_0 and ^e_0 is the empricial quantile of the first part of the trainig set (for computational reason)</span>
+        <span class="n">n_emp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">yi</span><span class="p">)))</span> <span class="c1">#Select onyl 1/10 of the training set</span>
+        <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">n_emp</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">n_emp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">yi</span><span class="p">)</span> <span class="c1">#In case the training dimension is too small wrt theta</span>
+        <span class="n">y_sort</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">yi</span><span class="p">[:</span><span class="n">n_emp</span><span class="p">])</span>
+        <span class="n">quantile0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_emp</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">quantile0</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="n">quantile0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">k0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">y_sort</span><span class="p">[</span><span class="n">quantile0</span><span class="p">])</span> <span class="k">if</span> <span class="n">y_sort</span><span class="p">[</span><span class="n">quantile0</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">y_sort</span><span class="p">[</span><span class="n">quantile0</span><span class="p">])</span>
+        <span class="c1"># The initial guess for model coefficients is taken from the original paper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.164</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.757</span><span class="p">,</span> <span class="mf">0.995</span><span class="p">,</span> <span class="mf">0.007</span><span class="p">])</span>
+
+        <span class="c1">#-------------------- Step 2: Optimization Routine</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="c1"># First optimization: tau = 5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_core</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="c1"># Second optimization: tau = 20</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_core</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="c1"># Second optimization: actual loss</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_core</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        
+        <span class="c1"># Save in sample variables</span>
+        <span class="n">qi</span><span class="p">,</span> <span class="n">ei</span><span class="p">,</span> <span class="n">ki</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GAS1_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">k0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_out</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;qi&#39;</span><span class="p">:</span><span class="n">qi</span><span class="p">,</span> <span class="s1">&#39;ei&#39;</span><span class="p">:</span><span class="n">ei</span><span class="p">,</span> <span class="s1">&#39;ki&#39;</span><span class="p">:</span><span class="n">ki</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_state</span> <span class="o">=</span> <span class="p">[</span><span class="n">yi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ki</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">return_train</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;qi&#39;</span><span class="p">:</span><span class="n">qi</span><span class="p">,</span> <span class="s1">&#39;ei&#39;</span><span class="p">:</span><span class="n">ei</span><span class="p">,</span> <span class="s1">&#39;ki&#39;</span><span class="p">:</span><span class="n">ki</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="GAS1.predict">
+<a class="viewcode-back" href="../../models.html#models.gas.GAS1.predict">[docs]</a>
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yf</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">())):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Predict the GAS1 model.</span>
+
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - yf: ndarray, optional</span>
+<span class="sd">                target time series. If yf is not empty, the internal state is updated</span>
+<span class="sd">                with the last observation. Default is an empty list.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - qf: ndarray</span>
+<span class="sd">                quantile forecast in the test set.</span>
+<span class="sd">            - ef: ndarray</span>
+<span class="sd">                expected shortfall forecast in the test set.</span>
+<span class="sd">            - kf: ndarray</span>
+<span class="sd">                state variable in the test set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">qf</span><span class="p">,</span> <span class="n">ef</span><span class="p">,</span> <span class="n">kf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GAS1_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">yf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_state</span><span class="p">,</span> <span class="n">pred_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_state</span> <span class="o">=</span> <span class="p">[</span><span class="n">yf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">kf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;qf&#39;</span><span class="p">:</span><span class="n">qf</span><span class="p">,</span> <span class="s1">&#39;ef&#39;</span><span class="p">:</span><span class="n">ef</span><span class="p">,</span> <span class="s1">&#39;kf&#39;</span><span class="p">:</span><span class="n">kf</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="GAS1.fit_predict">
+<a class="viewcode-back" href="../../models.html#models.gas.GAS1.fit_predict">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ti</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fit and predict the GAS1 model.</span>
+
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - ti: int</span>
+<span class="sd">                train set length.</span>
+<span class="sd">            - seed: int or None, optional</span>
+<span class="sd">                random seed. Default is None.</span>
+<span class="sd">            - return_train: bool, optional</span>
+<span class="sd">                if True, return the fitted values in training set. Default is False.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - qi: ndarray</span>
+<span class="sd">                quantile forecast in the training set (if return_train=True).</span>
+<span class="sd">            - ei: ndarray</span>
+<span class="sd">                expected shortfall forecast in the training set (if return_train=True).</span>
+<span class="sd">            - ki: ndarray</span>
+<span class="sd">                state variable in the training set (if return_train=True).</span>
+<span class="sd">            - qf: ndarray</span>
+<span class="sd">                quantile forecast in the test set.</span>
+<span class="sd">            - ef: ndarray</span>
+<span class="sd">                expected shortfall forecast in the test set.</span>
+<span class="sd">            - kf: ndarray</span>
+<span class="sd">                state variable in the test set.</span>
+<span class="sd">            - beta: ndarray</span>
+<span class="sd">                optimized model parameters.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">yi</span><span class="p">,</span> <span class="n">yf</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="n">ti</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">ti</span><span class="p">:]</span> <span class="c1">#Split train and test</span>
+        <span class="k">if</span> <span class="n">return_train</span><span class="p">:</span>
+            <span class="n">res_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#Train AE</span>
+            <span class="n">res_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;qi&#39;</span><span class="p">:</span><span class="n">res_train</span><span class="p">[</span><span class="s1">&#39;qi&#39;</span><span class="p">],</span> <span class="s1">&#39;ei&#39;</span><span class="p">:</span><span class="n">res_train</span><span class="p">[</span><span class="s1">&#39;ei&#39;</span><span class="p">],</span> <span class="s1">&#39;ki&#39;</span><span class="p">:</span><span class="n">res_train</span><span class="p">[</span><span class="s1">&#39;ki&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;qf&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;qf&#39;</span><span class="p">],</span> <span class="s1">&#39;ef&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;ef&#39;</span><span class="p">],</span> <span class="s1">&#39;kf&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;kf&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;beta&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">}</span> <span class="c1">#Return prediction</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1">#Train AE</span>
+            <span class="n">res_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;qf&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;qf&#39;</span><span class="p">],</span> <span class="s1">&#39;ef&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;ef&#39;</span><span class="p">],</span> <span class="s1">&#39;kf&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;kf&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;beta&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">}</span> <span class="c1">#Return prediction</span></div>
+</div>
+
+        
+<div class="viewcode-block" id="GAS2">
+<a class="viewcode-back" href="../../models.html#models.gas.GAS2">[docs]</a>
+<span class="k">class</span> <span class="nc">GAS2</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generative Autoregressive Score (GAS) two-factors model for Expected Shortfall estimation. It reproduces the model proposed in:</span>
+
+<span class="sd">    Patton, A. J., Ziegel, J. F., &amp; Chen, R. (2019). Dynamic semiparametric models for expected shortfall (and value-at-risk). Journal of econometrics, 211(2), 388-413.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    ----------------</span>
+<span class="sd">        - theta: float</span>
+<span class="sd">            desired confidence level.</span>
+
+<span class="sd">    Example of usage</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        import numpy as np</span>
+<span class="sd">        from models.gas import GAS2 #Import the model</span>
+<span class="sd">        </span>
+<span class="sd">        y = np.random.randn(1500)  #Replace with your data</span>
+<span class="sd">        tv = 1250 #Training set length</span>
+<span class="sd">        theta = 0.05 #Set the desired confidence level</span>
+
+<span class="sd">        mdl = GAS2(theta) #Initialize the model</span>
+<span class="sd">        res = mdl.fit_predict(y, tv, seed=2) # Fit and predict</span>
+
+<span class="sd">        q_pred = res[&#39;qf&#39;] #Quantile forecast</span>
+<span class="sd">        es_pred = res[&#39;ef&#39;] #Expected shortfall forecast</span>
+<span class="sd">    </span>
+<span class="sd">    Methods:</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initialization of the GAS2 model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - theta: float</span>
+<span class="sd">                desired confidence level.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - None</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span>
+
+    <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the GAS2 loss.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - v: float</span>
+<span class="sd">                quantile forecast.</span>
+<span class="sd">            - e: float</span>
+<span class="sd">                expected shortfall forecast.</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - float</span>
+<span class="sd">                GAS2 loss.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">loss_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y</span><span class="o">&lt;=</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">v</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">*</span><span class="n">e</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">v</span><span class="o">/</span><span class="n">e</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">e</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss_val</span>
+    
+    <span class="k">def</span> <span class="nf">smooth_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tau</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the smooth version of the GAS2 loss.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - v: float</span>
+<span class="sd">                quantile forecast.</span>
+<span class="sd">            - e: float</span>
+<span class="sd">                expected shortfall forecast.</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - tau: float</span>
+<span class="sd">                smoothing parameter.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - float</span>
+<span class="sd">                GAS2 loss.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">loss_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">v</span><span class="p">)</span><span class="o">/</span><span class="p">(</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">tau</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">v</span><span class="p">)))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">*</span><span class="n">e</span> <span class="p">)</span> <span class="o">+</span> <span class="n">v</span><span class="o">/</span><span class="n">e</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="n">e</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss_val</span>
+            
+    <span class="k">def</span> <span class="nf">GAS2_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">pred_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Loop for the GAS2 model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - beta: ndarray</span>
+<span class="sd">                model parameters.</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - k0: float</span>
+<span class="sd">                initial point for the state variable.</span>
+<span class="sd">            - pred_mode: bool, optional</span>
+<span class="sd">                prediction mode. Default is False.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - ndarray</span>
+<span class="sd">                quantile forecast.</span>
+<span class="sd">            - ndarray</span>
+<span class="sd">                expected shortfall forecast.</span>
+<span class="sd">            - ndarray</span>
+<span class="sd">                state variable.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">lam</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># Initialize an array useful for calculations</span>
+        <span class="c1"># Initial point</span>
+        <span class="k">if</span> <span class="n">pred_mode</span><span class="p">:</span> <span class="c1">#If we are in pred_mode, we have q and e at step -1 and we need to compute them at step 0</span>
+            <span class="n">lam</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">k0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span> <span class="p">(</span><span class="n">k0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">k0</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="p">)</span> <span class="c1">#In pred_mode, k0 is assumed to be [y[-1], q[-1], k[-1]]</span>
+            <span class="n">lam</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">k0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">k0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">k0</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">-</span> <span class="n">k0</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">qe_temp</span> <span class="o">=</span> <span class="n">beta</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">beta</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">k0</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> <span class="o">+</span>\
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">lam</span><span class="p">)</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="p">[</span><span class="n">qe_temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]];</span> <span class="n">e</span> <span class="o">=</span> <span class="p">[</span><span class="n">qe_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1">#If we are in training mode, we have an approximation of q and e at step 0</span>
+            <span class="n">q</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="p">[</span><span class="n">k0</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">k0</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">qe_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">k0</span><span class="p">)</span>
+            
+        <span class="c1"># Loop</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+            <span class="n">lam</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">q</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">q</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="p">)</span>
+            <span class="n">lam</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">q</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">-</span> <span class="n">e</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">qe_temp</span> <span class="o">=</span> <span class="n">beta</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">beta</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">qe_temp</span><span class="p">)</span> <span class="o">+</span>\
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">beta</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">lam</span><span class="p">)</span>
+            <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qe_temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span> <span class="n">e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qe_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">q</span><span class="p">,</span> <span class="n">e</span>
+    
+    <span class="k">def</span> <span class="nf">GASloss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the GAS2 loss.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - beta: ndarray</span>
+<span class="sd">                model parameters.</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - k0: float</span>
+<span class="sd">                initial point for the state variable.</span>
+<span class="sd">            - tau: float, optional</span>
+<span class="sd">                smoothing parameter. If None, the original loss is computed. Default is None.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - float</span>
+<span class="sd">                GAS2 loss, either in its original form (when tau=None) or smoothed version.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">e</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GAS2_loop</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+            <span class="n">loss_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loss_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth_loss</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss_val</span>
+    
+    <span class="k">def</span> <span class="nf">fit_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">beta0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Core function for the GAS2 model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - yi: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - beta0: ndarray</span>
+<span class="sd">                initial model parameters.</span>
+<span class="sd">            - k0: float </span>
+<span class="sd">                initial point for the state variable.</span>
+<span class="sd">            - tau: float, optional</span>
+<span class="sd">                smoothing parameter. If None, the original loss is computed. Default is None.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - ndarray</span>
+<span class="sd">                optimized model parameters if the optimization is successful,</span>
+<span class="sd">                otherwise the initial parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        :meta private:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+        <span class="n">bound</span> <span class="o">=</span> <span class="p">[(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="kc">None</span><span class="p">),</span>
+                 <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ineq&#39;</span><span class="p">,</span> <span class="s1">&#39;fun&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]}]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">GASloss</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="p">),</span> <span class="n">beta0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bound</span><span class="p">,</span>
+                        <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;SLSQP&#39;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opt_res</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">tau</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">beta0</span>
+
+<div class="viewcode-block" id="GAS2.fit">
+<a class="viewcode-back" href="../../models.html#models.gas.GAS2.fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fit the GAS2 model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - yi: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - seed: int or None, optional</span>
+<span class="sd">                random seed. Default is None.</span>
+<span class="sd">            - return_train: bool, optional</span>
+<span class="sd">                if True, return the fitted variables. Default is False.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - qi: ndarray</span>
+<span class="sd">                quantile forecast in the training set (if return_train=True).</span>
+<span class="sd">            - ei: ndarray</span>
+<span class="sd">                expected shortfall forecast in the training set (if return_train=True).</span>
+<span class="sd">            - beta: ndarray</span>
+<span class="sd">                optimized model parameters (if return_train=True).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+        <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fmin</span>
+        
+        <span class="c1">#-------------------- Step 1: Initialization</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yi</span><span class="p">)</span>
+
+        <span class="c1">#The starting forecast ^q_0 and ^e_0 is the empricial quantile of the first part of the trainig set (for computational reason)</span>
+        <span class="n">n_emp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">yi</span><span class="p">)))</span> <span class="c1">#Select onyl 1/10 of the training set</span>
+        <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">n_emp</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">n_emp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">yi</span><span class="p">)</span> <span class="c1">#In case the training dimension is too small wrt theta</span>
+        <span class="n">y_sort</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">yi</span><span class="p">[:</span><span class="n">n_emp</span><span class="p">])</span>
+        <span class="n">quantile0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_emp</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">quantile0</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="n">quantile0</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">k0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y_sort</span><span class="p">[</span><span class="n">quantile0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y_sort</span><span class="p">[:</span><span class="n">quantile0</span><span class="o">+</span><span class="mi">1</span><span class="p">])])</span> <span class="c1">#Initial state variable</span>
+        <span class="c1"># The initial guess for model coefficients is taken from the original paper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.009</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.010</span><span class="p">,</span> <span class="mf">0.993</span><span class="p">,</span> <span class="mf">0.994</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.358</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.003</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.351</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.003</span><span class="p">])</span>
+
+        <span class="c1">#-------------------- Step 2: Optimization Routine</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="c1"># First optimization: tau = 5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_core</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta0</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="c1"># Second optimization: tau = 20</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_core</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="c1"># Second optimization: actual loss</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_core</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">k0</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        
+        <span class="c1"># Save in sample variables</span>
+        <span class="n">qi</span><span class="p">,</span> <span class="n">ei</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GAS2_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">k0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_out</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;qi&#39;</span><span class="p">:</span><span class="n">qi</span><span class="p">,</span> <span class="s1">&#39;ei&#39;</span><span class="p">:</span><span class="n">ei</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_state</span> <span class="o">=</span> <span class="p">[</span><span class="n">yi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">qi</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ei</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">return_train</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;qi&#39;</span><span class="p">:</span><span class="n">qi</span><span class="p">,</span> <span class="s1">&#39;ei&#39;</span><span class="p">:</span><span class="n">ei</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="GAS2.predict">
+<a class="viewcode-back" href="../../models.html#models.gas.GAS2.predict">[docs]</a>
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yf</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">())):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Predict the GAS2 model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - yf: ndarray, optional</span>
+<span class="sd">                target time series. If yf is not empty, the internal state is updated</span>
+<span class="sd">                with the last observation. Default is an empty list.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - qf: ndarray</span>
+<span class="sd">                quantile forecast in the test set.</span>
+<span class="sd">            - ef: ndarray</span>
+<span class="sd">                expected shortfall forecast in the test set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">qf</span><span class="p">,</span> <span class="n">ef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GAS2_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">yf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_state</span><span class="p">,</span> <span class="n">pred_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_state</span> <span class="o">=</span> <span class="p">[</span><span class="n">yf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">qf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ef</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;qf&#39;</span><span class="p">:</span><span class="n">qf</span><span class="p">,</span> <span class="s1">&#39;ef&#39;</span><span class="p">:</span><span class="n">ef</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="GAS2.fit_predict">
+<a class="viewcode-back" href="../../models.html#models.gas.GAS2.fit_predict">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">ti</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fit and predict the GAS1 model.</span>
+<span class="sd">        INPUTS:</span>
+<span class="sd">            - y: ndarray</span>
+<span class="sd">                target time series.</span>
+<span class="sd">            - ti: int</span>
+<span class="sd">                train set length.</span>
+<span class="sd">            - seed: int or None, optional</span>
+<span class="sd">                random seed. Default is None.</span>
+<span class="sd">            - return_train: bool, optional</span>
+<span class="sd">                if True, return the fitted values in training set. Default is False.</span>
+<span class="sd">        OUTPUTS:</span>
+<span class="sd">            - qi: ndarray</span>
+<span class="sd">                quantile forecast in the training set (if return_train=True).</span>
+<span class="sd">            - ei: ndarray</span>
+<span class="sd">                expected shortfall forecast in the training set (if return_train=True).</span>
+<span class="sd">            - qf: ndarray</span>
+<span class="sd">                quantile forecast in the test set.</span>
+<span class="sd">            - ef: ndarray</span>
+<span class="sd">                expected shortfall forecast in the test set.</span>
+<span class="sd">            - beta</span>
+<span class="sd">                optimized model parameters.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">yi</span><span class="p">,</span> <span class="n">yf</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="n">ti</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">ti</span><span class="p">:]</span> <span class="c1">#Split train and test</span>
+        <span class="k">if</span> <span class="n">return_train</span><span class="p">:</span>
+            <span class="n">res_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#Train AE</span>
+            <span class="n">res_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;qi&#39;</span><span class="p">:</span><span class="n">res_train</span><span class="p">[</span><span class="s1">&#39;qi&#39;</span><span class="p">],</span> <span class="s1">&#39;ei&#39;</span><span class="p">:</span><span class="n">res_train</span><span class="p">[</span><span class="s1">&#39;ei&#39;</span><span class="p">],</span> <span class="s1">&#39;qf&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;qf&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;ef&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;ef&#39;</span><span class="p">],</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">}</span> <span class="c1">#Return prediction</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">yi</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">return_train</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1">#Train AE</span>
+            <span class="n">res_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">yf</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;qf&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;qf&#39;</span><span class="p">],</span> <span class="s1">&#39;ef&#39;</span><span class="p">:</span><span class="n">res_test</span><span class="p">[</span><span class="s1">&#39;ef&#39;</span><span class="p">],</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">}</span> <span class="c1">#Return prediction</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Federico Gatta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
