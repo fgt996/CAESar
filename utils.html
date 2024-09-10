@@ -126,6 +126,7 @@
 <dd><p>Bases: <a class="reference internal" href="#utils.bootstrap_mean_test" title="utils.bootstrap_mean_test"><code class="xref py py-class docutils literal notranslate"><span class="pre">bootstrap_mean_test</span></code></a></p>
 <p>Acerbi-Szekely test for assessing the goodness of the Expected Shortfall estimate, with both Z1 and Z2 statistics, as described in:</p>
 <p>Acerbi, C., &amp; Szekely, B. (2014). Back-testing expected shortfall. Risk, 27(11), 76-81.</p>
+<p>The null hypothesis is H0: Q, E are the correct (latent) quantile and expected shortfall estimates for the observed time series Y.</p>
 <section id="parameters">
 <h2>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
 <blockquote>
@@ -216,7 +217,7 @@
 <dt class="sig sig-object py" id="utils.DMtest">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">DMtest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#DMtest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.DMtest" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Diebold-Mariano test for the equality of forecast accuracy.</p>
+<p>Diebold-Mariano test for the equality of forecast accuracy. The null H0: E[loss_func(Q1, E1, Y)] == E[loss_func(Q2, E2, Y)] is tested.</p>
 <section id="id1">
 <h2>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <blockquote>
@@ -314,6 +315,7 @@
 <dd><p>Bases: <a class="reference internal" href="#utils.bootstrap_mean_test" title="utils.bootstrap_mean_test"><code class="xref py py-class docutils literal notranslate"><span class="pre">bootstrap_mean_test</span></code></a></p>
 <p>Encompassing test to assess whenever the first sample of losses is statistically lower than the second. As described in:</p>
 <p>Kışınbay, T. (2010). The use of encompassing tests for forecast combinations. Journal of Forecasting, 29(8), 715-727.</p>
+<p>The null hypothesis is H0: E[loss(Q_new, E_new, Y)] &gt;= E[loss(Q_bench, E_bench, Y)].</p>
 <section id="id4">
 <h2>Parameters:<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <blockquote>
@@ -409,7 +411,7 @@
 <dt class="sig sig-object py" id="utils.LossDiff_test">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">LossDiff_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_boot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#LossDiff_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.LossDiff_test" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#utils.bootstrap_mean_test" title="utils.bootstrap_mean_test"><code class="xref py py-class docutils literal notranslate"><span class="pre">bootstrap_mean_test</span></code></a></p>
-<p>Loss difference test to assess whenever the first sample of losses is statistically lower than the second.</p>
+<p>Loss difference test to assess whenever the first sample of losses is statistically lower than the second. The null hypothesis is H0: E[loss(Q_new, E_new, Y)] &gt;= E[loss(Q_bench, E_bench, Y)].</p>
 <section id="id7">
 <h2>Parameters:<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
 <blockquote>
@@ -508,6 +510,7 @@
 <dd><p>Bases: <a class="reference internal" href="#utils.bootstrap_mean_test" title="utils.bootstrap_mean_test"><code class="xref py py-class docutils literal notranslate"><span class="pre">bootstrap_mean_test</span></code></a></p>
 <p>McNeil-Frey test for assessing the goodness of the Expected Shortfall estimate, as described in:</p>
 <p>McNeil, A. J., &amp; Frey, R. (2000). Estimation of tail-related risk measures for heteroscedastic financial time series: an extreme value approach. Journal of empirical finance, 7(3-4), 271-300.</p>
+<p>The null hypothesis is H0: the risk is not underestimated.</p>
 <section id="id10">
 <h2>Parameters:<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
 <blockquote>
@@ -797,7 +800,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.cr_t_test">
 <span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">cr_t_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">errorsA</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errorsB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_len</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils.html#cr_t_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cr_t_test" title="Link to this definition"></a></dt>
-<dd><p>Corrected resampled t-test for the equality of forecast accuracy.</p>
+<dd><p>Corrected resampled t-test for the equality of forecast accuracy. The null H0: E[errorsA] &gt;= E[errorsB] is tested.</p>
 <dl class="simple">
 <dt>INPUTS:</dt><dd><ul class="simple">
 <li><dl class="simple">
@@ -829,7 +832,7 @@
 </dl>
 </li>
 <li><dl class="simple">
-<dt>p_val: float</dt><dd><p>the p-value of the test</p>
+<dt>p_value: float</dt><dd><p>the p-value of the test</p>
 </dd>
 </dl>
 </li>
