@@ -67,3 +67,6 @@ The ```output``` folder contains the halfway output for the CAESar paper experim
 [3] Patton, A. J., Ziegel, J. F., & Chen, R. (2019). Dynamic semiparametric models for expected shortfall (and value-at-risk). Journal of econometrics, 211(2), 388-413.
 
 [4] Kratz, M., Lok, Y. H., & McNeil, A. J. (2018). Multinomial VaR backtests: A simple implicit approach to backtesting expected shortfall. Journal of Banking & Finance, 88, 393-407.
+
+# Similar Repository
+If you are interested in risk measures, you can find interesting the [![Static Badge](https://img.shields.io/badge/Realized_Risk_Measures%20repository-blue?style=plastic)](https://github.com/fgt996/Realized_Risk_Measures) It contains a collection of approaches for filtering VaR and ES from high-frequency data.
