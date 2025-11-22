@@ -1,7 +1,7 @@
 
 # CAESar: Conditional Autoregressive Expected Shortfall
 
-[![Static Badge](https://img.shields.io/badge/CAESar%20Paper%20SSRN-blue?style=plastic)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5623030) [![Static Badge](https://img.shields.io/badge/CAESar%20Paper%20Arxiv-red?style=plastic)
+[![Static Badge](https://img.shields.io/badge/CAESar%20Paper%20SSRN-blue?style=plastic)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4886158) [![Static Badge](https://img.shields.io/badge/CAESar%20Paper%20Arxiv-red?style=plastic)
 ](https://arxiv.org/abs/2407.06619)
 
 [![Static Badge](https://img.shields.io/badge/Documentation-blue?logo=github&labelColor=black)
